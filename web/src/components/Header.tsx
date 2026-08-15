@@ -15,9 +15,9 @@ function LogoMark() {
     return (
       <span
         aria-hidden
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-bfc-red text-sm font-bold text-white"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-bfc-red px-1 text-[9px] font-bold leading-tight text-white"
       >
-        BFC
+        {CLUB.shortName}
       </span>
     );
   }
@@ -57,9 +57,9 @@ export default function Header() {
           <LogoMark />
           <div className="min-w-0">
             <p className="truncate font-display text-lg font-bold uppercase tracking-wide text-white">
-              {CLUB.shortName}
+              {CLUB.name}
             </p>
-            <p className="truncate text-xs text-white/70">{CLUB.name}</p>
+            <p className="truncate text-xs text-white/70">{CLUB.city}</p>
           </div>
         </Link>
 

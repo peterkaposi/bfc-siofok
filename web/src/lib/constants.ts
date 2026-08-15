@@ -6,6 +6,7 @@ export const CLUB = {
   city: "Siófok",
   founded: 1921,
   stadium: "Városi Sportpálya",
+  email: "bfcsiofokkft@gmail.com",
 } as const;
 
 export const EREDMENYEK = {

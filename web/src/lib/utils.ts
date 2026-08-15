@@ -1,3 +1,4 @@
+import { CLUB, EREDMENYEK } from "@/lib/constants";
 import type { Match } from "@/lib/flashscore/types";
 
 const dateFormatter = new Intl.DateTimeFormat("hu-HU", {
@@ -63,10 +64,7 @@ export function formatEventDate(date: string): string {
 
 export function getMatchScoreLabel(match: Match): string {
   if (match.status === "live") {
-    if (match.homeScore !== undefined && match.awayScore !== undefined) {
-      return `${match.homeScore} : ${match.awayScore}`;
-    }
-    return "ÉLŐ";
+    return `${match.homeScore ?? 0} : ${match.awayScore ?? 0}`;
   }
 
   if (match.status === "finished") {
@@ -76,7 +74,22 @@ export function getMatchScoreLabel(match: Match): string {
   if (match.status === "postponed") return "Elhalasztva";
   if (match.status === "cancelled") return "Törölve";
 
-  return "vs";
+  return "-";
+}
+
+function teamLabel(team: { id: string; name: string }): string {
+  return team.id === EREDMENYEK.teamId ? CLUB.name : team.name;
+}
+
+export function formatMatchTeams(match: Match): string {
+  const home = teamLabel(match.homeTeam);
+  const away = teamLabel(match.awayTeam);
+
+  if (match.status === "finished" || match.status === "live") {
+    return `${home} ${getMatchScoreLabel(match)} ${away}`;
+  }
+
+  return `${home} - ${away}`;
 }
 
 export function cn(...classes: Array<string | false | null | undefined>): string {

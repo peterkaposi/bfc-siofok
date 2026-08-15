@@ -51,7 +51,7 @@ function parseScore(value?: string): number | undefined {
   return Number.isNaN(parsed) ? undefined : parsed;
 }
 
-function mapStatus(raw?: string): MatchStatus {
+function mapFeedStatus(raw?: string): MatchStatus {
   switch (raw) {
     case "1":
     case "2":
@@ -68,6 +68,49 @@ function mapStatus(raw?: string): MatchStatus {
     default:
       return "scheduled";
   }
+}
+
+const MATCH_WINDOW_MS = 2.5 * 60 * 60 * 1000;
+const KICKOFF_BUFFER_MS = 5 * 60 * 1000;
+
+function resolveMatchStatus(
+  feedStatus: MatchStatus,
+  dateIso: string,
+  homeScore?: number,
+  awayScore?: number,
+): MatchStatus {
+  const kickoff = new Date(dateIso).getTime();
+  const now = Date.now();
+
+  if (feedStatus === "postponed" || feedStatus === "cancelled") {
+    return feedStatus;
+  }
+
+  if (feedStatus === "finished") {
+    return "finished";
+  }
+
+  // Kickoff still in the future → always upcoming, even if feed flags in-play codes.
+  if (kickoff > now + KICKOFF_BUFFER_MS) {
+    return "scheduled";
+  }
+
+  const inMatchWindow =
+    kickoff <= now + KICKOFF_BUFFER_MS && now <= kickoff + MATCH_WINDOW_MS;
+
+  if (inMatchWindow && feedStatus === "live") {
+    return "live";
+  }
+
+  if (kickoff + MATCH_WINDOW_MS < now) {
+    return homeScore !== undefined && awayScore !== undefined
+      ? "finished"
+      : feedStatus === "live"
+        ? "finished"
+        : "scheduled";
+  }
+
+  return "scheduled";
 }
 
 function timestampToIso(raw?: string): string | null {
@@ -102,14 +145,18 @@ function recordToMatch(
     slug: fields.WV,
   };
 
+  const homeScore = parseScore(fields.AT);
+  const awayScore = parseScore(fields.AU);
+  const feedStatus = mapFeedStatus(fields.AB ?? fields.AC);
+
   return {
     id,
     date,
     homeTeam,
     awayTeam,
-    homeScore: parseScore(fields.AT),
-    awayScore: parseScore(fields.AU),
-    status: mapStatus(fields.AB ?? fields.AC),
+    homeScore,
+    awayScore,
+    status: resolveMatchStatus(feedStatus, date, homeScore, awayScore),
     competition: fields.ZA,
     round: fields.ER,
     isHome: homeTeamId === teamId,

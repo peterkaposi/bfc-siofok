@@ -1,4 +1,4 @@
-import { EREDMENYEK } from "@/lib/constants";
+import { CLUB, EREDMENYEK } from "@/lib/constants";
 import type { TeamStats } from "@/lib/flashscore/types";
 
 interface StandingsSectionProps {
@@ -46,7 +46,7 @@ export default function StandingsSection({ stats }: StandingsSectionProps) {
               Szezon statisztika
             </p>
             <h2 className="mt-2 font-display text-3xl font-bold uppercase">
-              BFC teljesítmény
+              {CLUB.name} teljesítmény
             </h2>
             <p className="mt-3 max-w-2xl text-sm text-white/70">
               Az alábbi adatok a lejátszott meccsek alapján számított klubstatisztikák.

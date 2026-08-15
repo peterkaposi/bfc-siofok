@@ -2,8 +2,8 @@ import { CLUB } from "@/lib/constants";
 import type { Match } from "@/lib/flashscore/types";
 import {
   formatMatchDate,
+  formatMatchTeams,
   formatRelativeDate,
-  getMatchScoreLabel,
 } from "@/lib/utils";
 
 interface HeroProps {
@@ -31,7 +31,6 @@ function MatchPill({
     );
   }
 
-  const opponent = match.isHome ? match.awayTeam.name : match.homeTeam.name;
   const venue = match.isHome ? "Hazai" : "Vendég";
 
   return (
@@ -43,10 +42,9 @@ function MatchPill({
       }`}
     >
       <p className="text-xs uppercase tracking-[0.2em] text-white/60">{label}</p>
-      <p className="mt-2 font-display text-2xl font-bold text-white">
-        {getMatchScoreLabel(match)}
+      <p className="mt-2 font-display text-xl font-bold leading-snug text-white sm:text-2xl">
+        {formatMatchTeams(match)}
       </p>
-      <p className="mt-1 text-sm text-white/90">{opponent}</p>
       <p className="mt-2 text-xs text-white/60">
         {variant === "next"
           ? formatRelativeDate(match.date)

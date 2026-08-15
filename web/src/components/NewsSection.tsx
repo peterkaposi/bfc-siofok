@@ -1,4 +1,5 @@
 import type { NewsArticle } from "@/lib/sanity/client";
+import { CLUB } from "@/lib/constants";
 import { formatRelativeDate } from "@/lib/utils";
 
 interface NewsSectionProps {
@@ -36,7 +37,7 @@ export default function NewsSection({ articles }: NewsSectionProps) {
               ) : (
                 <div className="flex h-44 items-end bg-bfc-black p-4">
                   <span className="font-display text-2xl font-bold uppercase text-bfc-red">
-                    BFC
+                    {CLUB.name}
                   </span>
                 </div>
               )}

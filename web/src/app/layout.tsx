@@ -21,7 +21,6 @@ export const metadata: Metadata = {
     "A BFC Siófok hivatalos weboldala – piros-fekete szenvedély a Balaton partján.",
   keywords: [
     "BFC Siófok",
-    "BFC",
     "foci",
     "NB III",
     "Siófok",

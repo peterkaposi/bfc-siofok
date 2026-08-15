@@ -2,8 +2,8 @@ import { EREDMENYEK } from "@/lib/constants";
 import type { Match } from "@/lib/flashscore/types";
 import {
   formatMatchDate,
+  formatMatchTeams,
   formatRelativeDate,
-  getMatchScoreLabel,
 } from "@/lib/utils";
 
 interface MatchCenterProps {
@@ -12,8 +12,6 @@ interface MatchCenterProps {
 }
 
 function MatchRow({ match }: { match: Match }) {
-  const opponent = match.isHome ? match.awayTeam.name : match.homeTeam.name;
-
   return (
     <article className="grid gap-3 rounded-2xl border border-black/10 bg-white p-4 shadow-sm sm:grid-cols-[1fr_auto_auto] sm:items-center">
       <div>
@@ -22,9 +20,7 @@ function MatchRow({ match }: { match: Match }) {
           {match.round ? ` · ${match.round}. forduló` : ""}
         </p>
         <p className="mt-1 font-display text-xl font-bold text-bfc-black">
-          {match.isHome ? "BFC" : opponent}{" "}
-          <span className="text-bfc-red">{getMatchScoreLabel(match)}</span>{" "}
-          {match.isHome ? opponent : "BFC"}
+          {formatMatchTeams(match)}
         </p>
         <p className="mt-1 text-sm text-black/60">
           {match.status === "scheduled"
@@ -68,9 +64,7 @@ export default function MatchCenter({ matches, liveMatches }: MatchCenterProps) 
   const upcoming = matches
     .filter(
       (match) =>
-        match.status === "scheduled" ||
-        match.status === "postponed" ||
-        match.status === "live",
+        match.status === "scheduled" || match.status === "postponed",
     )
     .slice(0, 5);
 
