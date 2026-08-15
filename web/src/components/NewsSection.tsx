@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { NewsArticle } from "@/lib/sanity/client";
 import { CLUB } from "@/lib/constants";
 import { formatRelativeDate } from "@/lib/utils";
@@ -23,16 +24,17 @@ export default function NewsSection({ articles }: NewsSectionProps) {
 
         <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {articles.map((article) => (
-            <article
+            <Link
               key={article._id}
-              className="overflow-hidden rounded-2xl border border-black/10 bg-zinc-50 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              href={`/hirek/${article.slug}`}
+              className="group overflow-hidden rounded-2xl border border-black/10 bg-zinc-50 shadow-sm transition hover:-translate-y-0.5 hover:border-bfc-red/30 hover:shadow-md"
             >
               {article.imageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={article.imageUrl}
                   alt={article.title}
-                  className="h-44 w-full object-cover"
+                  className="h-44 w-full object-cover transition group-hover:scale-[1.02]"
                 />
               ) : (
                 <div className="flex h-44 items-end bg-bfc-black p-4">
@@ -46,7 +48,7 @@ export default function NewsSection({ articles }: NewsSectionProps) {
                 <p className="text-xs uppercase tracking-[0.15em] text-black/50">
                   {formatRelativeDate(article.publishedAt)}
                 </p>
-                <h3 className="mt-2 font-display text-xl font-bold text-bfc-black">
+                <h3 className="mt-2 font-display text-xl font-bold text-bfc-black group-hover:text-bfc-red">
                   {article.title}
                 </h3>
                 {article.excerpt && (
@@ -54,8 +56,11 @@ export default function NewsSection({ articles }: NewsSectionProps) {
                     {article.excerpt}
                   </p>
                 )}
+                <p className="mt-4 text-sm font-semibold text-bfc-red">
+                  Tovább olvasom →
+                </p>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </div>

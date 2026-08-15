@@ -3,6 +3,7 @@ import { createImageUrlBuilder, type SanityImageSource } from "@sanity/image-url
 import { client, isSanityConfigured } from "@/sanity/client";
 import {
   CLUB_HISTORY_QUERY,
+  NEWS_ARTICLE_BY_SLUG_QUERY,
   NEWS_ARTICLES_QUERY,
   PLAYERS_QUERY,
   SPONSORS_QUERY,
@@ -17,6 +18,10 @@ export interface NewsArticle {
   category?: string;
   publishedAt: string;
   imageUrl?: string;
+}
+
+export interface NewsArticleDetail extends NewsArticle {
+  body?: PortableTextBlock[];
 }
 
 export interface ClubEvent {
@@ -92,6 +97,13 @@ export const PLACEHOLDER_NEWS: NewsArticle[] = [
   },
 ];
 
+function buildHeroImageUrl(
+  source: SanityImageSource | undefined,
+): string | undefined {
+  if (!source) return undefined;
+  return builder.image(source).width(1200).height(675).fit("crop").url();
+}
+
 export async function getNewsArticles(limit = 6): Promise<NewsArticle[]> {
   if (!isSanityConfigured) return PLACEHOLDER_NEWS.slice(0, limit);
 
@@ -121,6 +133,40 @@ export async function getNewsArticles(limit = 6): Promise<NewsArticle[]> {
     }));
   } catch {
     return PLACEHOLDER_NEWS.slice(0, limit);
+  }
+}
+
+export async function getNewsArticleBySlug(
+  slug: string,
+): Promise<NewsArticleDetail | null> {
+  if (!isSanityConfigured) return null;
+
+  try {
+    const article = await client.fetch<{
+      _id: string;
+      title: string;
+      slug: { current: string };
+      excerpt?: string;
+      category?: string;
+      publishedAt: string;
+      mainImage?: SanityImageSource;
+      body?: PortableTextBlock[];
+    } | null>(NEWS_ARTICLE_BY_SLUG_QUERY, { slug }, { next: { revalidate: 60 } });
+
+    if (!article) return null;
+
+    return {
+      _id: article._id,
+      title: article.title,
+      slug: article.slug.current,
+      excerpt: article.excerpt,
+      category: article.category,
+      publishedAt: article.publishedAt,
+      imageUrl: buildHeroImageUrl(article.mainImage),
+      body: article.body,
+    };
+  } catch {
+    return null;
   }
 }
 

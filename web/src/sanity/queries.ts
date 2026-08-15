@@ -12,6 +12,19 @@ export const NEWS_ARTICLES_QUERY = defineQuery(`
   }
 `);
 
+export const NEWS_ARTICLE_BY_SLUG_QUERY = defineQuery(`
+  *[_type == "newsArticle" && slug.current == $slug][0]{
+    _id,
+    title,
+    slug,
+    excerpt,
+    category,
+    publishedAt,
+    mainImage,
+    body
+  }
+`);
+
 export const UPCOMING_EVENTS_QUERY = defineQuery(`
   *[_type == "event" && date >= $now] | order(date asc)[0...$limit]{
     _id,
