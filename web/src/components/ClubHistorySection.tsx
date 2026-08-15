@@ -7,7 +7,7 @@ interface ClubHistorySectionProps {
 
 export default function ClubHistorySection({ history }: ClubHistorySectionProps) {
   return (
-    <section id="tortenelem" className="bg-white py-16">
+    <section id="tortenelem" className="w-full max-w-full bg-white py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-bfc-red">

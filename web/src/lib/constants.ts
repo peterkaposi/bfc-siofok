@@ -30,3 +30,12 @@ export const SOCIAL = {
 } as const;
 
 export const REVALIDATE_SECONDS = 300;
+
+export const NAV_ITEMS = [
+  { href: "#meccsek", label: "Meccsek" },
+  { href: "#tabella", label: "Tabella" },
+  { href: "#jatekosok", label: "Játékosok" },
+  { href: "#tortenelem", label: "Klub történelem" },
+  { href: "#hirek", label: "Hírek" },
+  { href: "#esemenyek", label: "Események" },
+] as const;

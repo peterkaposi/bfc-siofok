@@ -12,7 +12,7 @@ export default async function SiteLayout({
   return (
     <>
       <Header />
-      <main>{children}</main>
+      <main className="w-full">{children}</main>
       <Footer sponsors={sponsors} />
     </>
   );

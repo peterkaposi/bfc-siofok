@@ -8,7 +8,7 @@ interface EventsSectionProps {
 
 export default function EventsSection({ events }: EventsSectionProps) {
   return (
-    <section id="esemenyek" className="bg-zinc-50 py-16">
+    <section id="esemenyek" className="w-full max-w-full bg-zinc-50 py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-bfc-red">
@@ -34,7 +34,7 @@ export default function EventsSection({ events }: EventsSectionProps) {
               <Link
                 key={event._id}
                 href={getEventPath(event)}
-                className="group block rounded-2xl border border-black/10 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-bfc-red/30 hover:shadow-md"
+                className="group block min-w-0 overflow-hidden rounded-2xl border border-black/10 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-bfc-red/30 hover:shadow-md"
               >
                 <p className="text-xs uppercase tracking-[0.15em] text-bfc-red">
                   {formatEventDate(event.date)}

@@ -6,7 +6,7 @@ interface PlayersSectionProps {
 
 export default function PlayersSection({ players }: PlayersSectionProps) {
   return (
-    <section id="jatekosok" className="bg-zinc-50 py-16">
+    <section id="jatekosok" className="w-full max-w-full bg-zinc-50 py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-bfc-red">
@@ -35,14 +35,16 @@ export default function PlayersSection({ players }: PlayersSectionProps) {
                 className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm"
               >
                 {player.photoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={player.photoUrl}
-                    alt={player.name}
-                    className="h-56 w-full object-cover object-top"
-                  />
+                  <div className="flex aspect-[3/4] items-center justify-center bg-zinc-100 p-4 sm:p-6">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={player.photoUrl}
+                      alt={player.name}
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </div>
                 ) : (
-                  <div className="flex h-56 items-center justify-center bg-bfc-black">
+                  <div className="flex aspect-[3/4] items-center justify-center bg-bfc-black">
                     <span className="font-display text-4xl font-bold text-bfc-red">
                       {player.number ?? "?"}
                     </span>

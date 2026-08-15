@@ -9,7 +9,7 @@ interface NewsSectionProps {
 
 export default function NewsSection({ articles }: NewsSectionProps) {
   return (
-    <section id="hirek" className="bg-white py-16">
+    <section id="hirek" className="w-full max-w-full bg-white py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -27,7 +27,7 @@ export default function NewsSection({ articles }: NewsSectionProps) {
             <Link
               key={article._id}
               href={`/hirek/${article.slug}`}
-              className="group overflow-hidden rounded-2xl border border-black/10 bg-zinc-50 shadow-sm transition hover:-translate-y-0.5 hover:border-bfc-red/30 hover:shadow-md"
+              className="group min-w-0 overflow-hidden rounded-2xl border border-black/10 bg-zinc-50 shadow-sm transition hover:-translate-y-0.5 hover:border-bfc-red/30 hover:shadow-md"
             >
               {article.imageUrl ? (
                 <div className="flex h-48 items-center justify-center bg-zinc-100 p-6">

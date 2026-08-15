@@ -57,7 +57,7 @@ function MatchPill({
 
 export default function Hero({ nextMatch, lastMatch }: HeroProps) {
   return (
-    <section className="relative overflow-hidden bg-bfc-black text-white">
+    <section className="relative w-full max-w-full overflow-hidden bg-bfc-black text-white">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(220,5,40,0.35),transparent_55%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(220,5,40,0.15),transparent_40%)]" />
 

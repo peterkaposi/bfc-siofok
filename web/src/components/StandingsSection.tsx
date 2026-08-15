@@ -38,7 +38,7 @@ export default function StandingsSection({ stats }: StandingsSectionProps) {
   const goalDifference = stats.goalsFor - stats.goalsAgainst;
 
   return (
-    <section id="tabella" className="bg-bfc-black py-16 text-white">
+    <section id="tabella" className="w-full max-w-full bg-bfc-black py-16 text-white">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

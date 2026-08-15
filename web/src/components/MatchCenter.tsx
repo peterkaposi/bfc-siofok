@@ -13,9 +13,9 @@ interface MatchCenterProps {
 
 function MatchRow({ match }: { match: Match }) {
   return (
-    <article className="grid gap-3 rounded-2xl border border-black/10 bg-white p-4 shadow-sm sm:grid-cols-[1fr_auto_auto] sm:items-center">
-      <div>
-        <p className="text-xs uppercase tracking-[0.15em] text-black/50">
+    <article className="min-w-0 grid gap-3 rounded-2xl border border-black/10 bg-white p-4 shadow-sm sm:grid-cols-[1fr_auto_auto] sm:items-center">
+      <div className="min-w-0">
+        <p className="break-words text-xs uppercase tracking-[0.15em] text-black/50 [overflow-wrap:anywhere]">
           {match.competition ?? "Bajnokság"}
           {match.round ? ` · ${match.round}. forduló` : ""}
         </p>
@@ -74,7 +74,7 @@ export default function MatchCenter({ matches, liveMatches }: MatchCenterProps) 
     .reverse();
 
   return (
-    <section id="meccsek" className="bg-zinc-50 py-16">
+    <section id="meccsek" className="w-full max-w-full bg-zinc-50 py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

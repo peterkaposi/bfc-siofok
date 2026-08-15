@@ -1,4 +1,4 @@
-import { CLUB, SOCIAL } from "@/lib/constants";
+import { CLUB, NAV_ITEMS, SOCIAL } from "@/lib/constants";
 import type { Sponsor } from "@/lib/sanity/client";
 
 interface FooterProps {
@@ -7,7 +7,7 @@ interface FooterProps {
 
 export default function Footer({ sponsors }: FooterProps) {
   return (
-    <footer className="border-t border-white/10 bg-bfc-black text-white">
+    <footer className="w-full max-w-full border-t border-white/10 bg-bfc-black text-white">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-3">
         <div>
           <p className="font-display text-2xl font-bold uppercase text-bfc-red">
@@ -27,26 +27,13 @@ export default function Footer({ sponsors }: FooterProps) {
             Oldal
           </p>
           <ul className="mt-4 space-y-2 text-sm">
-            <li>
-              <a href="#meccsek" className="text-white/80 hover:text-bfc-red">
-                Meccsek
-              </a>
-            </li>
-            <li>
-              <a href="#jatekosok" className="text-white/80 hover:text-bfc-red">
-                Játékosok
-              </a>
-            </li>
-            <li>
-              <a href="#tortenelem" className="text-white/80 hover:text-bfc-red">
-                Klub történelem
-              </a>
-            </li>
-            <li>
-              <a href="#szponzorok" className="text-white/80 hover:text-bfc-red">
-                Szponzorok
-              </a>
-            </li>
+            {NAV_ITEMS.map((item) => (
+              <li key={item.href}>
+                <a href={item.href} className="text-white/80 hover:text-bfc-red">
+                  {item.label}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -144,7 +131,10 @@ export default function Footer({ sponsors }: FooterProps) {
         </div>
       </div>
 
-      <div className="border-t border-white/10 py-4 text-center text-xs text-white/50">
+      <div
+        className="border-t border-white/10 py-4 text-center text-xs text-white/50"
+        suppressHydrationWarning
+      >
         © {new Date().getFullYear()} {CLUB.name}. Minden jog fenntartva.
       </div>
     </footer>
