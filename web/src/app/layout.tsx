@@ -14,13 +14,13 @@ const oswald = Oswald({
 
 export const metadata: Metadata = {
   title: {
-    default: "Balatonfüredi FC",
-    template: "%s | Balatonfüredi FC",
+    default: "BFC Siófok",
+    template: "%s | BFC Siófok",
   },
   description:
-    "A Balatonfüredi FC hivatalos weboldala – piros-fekete szenvedély a Balaton partján.",
+    "A BFC Siófok hivatalos weboldala – piros-fekete szenvedély a Balaton partján.",
   keywords: [
-    "Balatonfüredi FC",
+    "BFC Siófok",
     "BFC",
     "foci",
     "NB III",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     "klub",
   ],
   openGraph: {
-    title: "Balatonfüredi FC",
+    title: "BFC Siófok",
     description: "Piros-fekete szenvedély a Balaton partján",
     locale: "hu_HU",
     type: "website",

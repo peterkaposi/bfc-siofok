@@ -150,7 +150,7 @@ export function parseFlashscoreHtml(
   const teamName =
     matches.find((m) => m.isHome)?.homeTeam.name ??
     matches.find((m) => !m.isHome)?.awayTeam.name ??
-    "Balatonfüredi FC";
+    "BFC Siófok";
 
   return {
     teamId,

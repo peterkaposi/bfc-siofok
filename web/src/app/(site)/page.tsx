@@ -13,7 +13,7 @@ export default async function HomePage() {
   const [teamData, articles, events] = await Promise.all([
     getTeamData().catch(() => ({
       teamId: "YFzGWgOR",
-      teamName: "Balatonfüredi FC",
+      teamName: "BFC Siófok",
       matches: [],
       lastUpdated: new Date().toISOString(),
     })),

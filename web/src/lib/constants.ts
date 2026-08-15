@@ -1,5 +1,5 @@
 export const CLUB = {
-  name: "Balatonfüredi FC",
+  name: "BFC Siófok",
   shortName: "BFC",
   slug: "balatonfuredi-fc",
   tagline: "Piros-fekete szenvedély a Balaton partján",
