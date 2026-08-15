@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BFC Siófok — monorepo
 
-## Getting Started
+Piros-fekete klubportál Sanity CMS-sel és Eredmenyek.com mérkőzésadatokkal.
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+bfc-siofok/
+├── studio/     # Sanity Studio (standalone, localhost:3333)
+└── web/        # Next.js frontend (localhost:3000)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Sanity projekt
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Project ID:** `ko8gzdnf`
+- **Dataset:** `production`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Indítás
 
-## Learn More
+```bash
+# Web app
+npm run dev:web
 
-To learn more about Next.js, take a look at the following resources:
+# Studio (külön terminálban)
+npm run dev:studio
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Web: [http://localhost:3000](http://localhost:3000)
+- Studio: [http://localhost:3333](http://localhost:3333)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Első lépések a Studio-ban
 
-## Deploy on Vercel
+1. Futtasd: `cd studio && npm run dev`
+2. Jelentkezz be Sanity fiókkal (`sanity login` ha szükséges)
+3. Hozz létre **Hír** vagy **Esemény** dokumentumot
+4. Publish — megjelenik a web oldalon
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Környezeti változók
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Másold a `web/.env.example` fájlt `web/.env.local` néven (már elő van töltve a project ID-val).
+
+## Deploy
+
+- **Web:** Vercel — root directory: `web`
+- **Studio:** `cd studio && npm run deploy`
+
+## Logó
+
+A logó: `web/public/logo.png`
+
+## Mérkőzésadatok
+
+Automatikusan frissül az [eredmenyek.com](https://www.eredmenyek.com/csapat/siofok/YFzGWgOR/) BFC oldaláról.
