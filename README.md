@@ -19,7 +19,7 @@ bfc-siofok/
 # Web app
 npm run dev:web
 
-# Studio (külön terminálban)
+# Sanity Studio
 npm run dev:studio
 ```
 

@@ -1,5 +1,5 @@
 import { CLUB, EREDMENYEK } from "@/lib/constants";
-import type { Match } from "@/lib/flashscore/types";
+import type { Match, MatchGoal } from "@/lib/flashscore/types";
 
 const TIMEZONE = "Europe/Budapest";
 
@@ -112,6 +112,75 @@ export function getMatchScoreLabel(match: Match): string {
 
 function teamLabel(team: { id: string; name: string }): string {
   return team.id === EREDMENYEK.teamId ? CLUB.name : team.name;
+}
+
+const HALFTIME_STAGES = new Set(["38", "46"]);
+
+function resolveLiveStage(match: Match): string | undefined {
+  if (match.detailStage && match.detailStage !== "2") {
+    return match.detailStage;
+  }
+
+  if (match.feedStage && match.feedStage !== "2") {
+    return match.feedStage;
+  }
+
+  return match.detailStage ?? match.feedStage;
+}
+
+export function computeLiveMinute(
+  match: Match,
+  nowMs = Date.now(),
+): string | null {
+  if (match.status !== "live") return null;
+
+  const stage = resolveLiveStage(match);
+
+  if (stage && HALFTIME_STAGES.has(stage)) {
+    return "Félidő";
+  }
+
+  const periodStartSec =
+    match.periodStartTime ??
+    Math.floor(new Date(match.date).getTime() / 1000);
+  const elapsed = Math.max(
+    0,
+    Math.floor((nowMs / 1000 - periodStartSec) / 60),
+  );
+
+  if (stage === "13") {
+    return `${45 + elapsed}'`;
+  }
+
+  if (elapsed > 0 || match.periodStartTime || stage === "12") {
+    return `${elapsed}'`;
+  }
+
+  const feedMinute = match.liveMinute;
+  if (feedMinute !== undefined) {
+    if (stage === "13") {
+      return feedMinute <= 45 ? `${45 + feedMinute}'` : `${feedMinute}'`;
+    }
+    return `${feedMinute}'`;
+  }
+
+  return null;
+}
+
+export function formatLiveMinute(match: Match): string | null {
+  return computeLiveMinute(match);
+}
+
+export function formatLiveBadge(match: Match): string {
+  const minute = formatLiveMinute(match);
+  if (minute === "Félidő") return "Félidő";
+  if (minute) return `Élő · ${minute}`;
+  return "Élő";
+}
+
+export function formatMatchGoalLabel(goal: MatchGoal): string {
+  const suffix = goal.type === "penalty" ? " (büntető)" : "";
+  return `${goal.minute} ${goal.playerName}${suffix}`;
 }
 
 export function formatMatchTeams(match: Match): string {

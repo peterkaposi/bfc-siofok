@@ -31,6 +31,12 @@ export const SOCIAL = {
 
 export const REVALIDATE_SECONDS = 300;
 
+/** Cache TTL for live match score / goal updates */
+export const LIVE_REVALIDATE_SECONDS = 30;
+
+/** Flashscore ninja feed signature for match detail requests */
+export const FLASHSCORE_FEED_SIGN = "SW9D1eZo";
+
 export const NAV_ITEMS = [
   { href: "#meccsek", label: "Meccsek" },
   { href: "#tabella", label: "Tabella" },

@@ -1,5 +1,12 @@
 import { EREDMENYEK } from "@/lib/constants";
-import type { Match, MatchStatus, TeamData, TeamStats, TeamSummary } from "./types";
+import type {
+  Match,
+  MatchGoal,
+  MatchStatus,
+  TeamData,
+  TeamStats,
+  TeamSummary,
+} from "./types";
 
 const FEED_KEYS = [
   "fixtures",
@@ -57,6 +64,8 @@ function mapFeedStatus(raw?: string): MatchStatus {
     case "2":
     case "12":
     case "13":
+    case "38":
+    case "46":
       return "live";
     case "3":
       return "finished";
@@ -145,9 +154,10 @@ function recordToMatch(
     slug: fields.WV,
   };
 
-  const homeScore = parseScore(fields.AT);
-  const awayScore = parseScore(fields.AU);
-  const feedStatus = mapFeedStatus(fields.AB ?? fields.AC);
+  const homeScore = parseScore(fields.AT) ?? parseScore(fields.GRA);
+  const awayScore = parseScore(fields.AU) ?? parseScore(fields.GRB);
+  const feedStage = fields.AB;
+  const feedStatus = mapFeedStatus(feedStage ?? fields.AC);
 
   return {
     id,
@@ -160,7 +170,54 @@ function recordToMatch(
     competition: fields.ZA,
     round: fields.ER,
     isHome: homeTeamId === teamId,
+    feedStage,
+    liveMinute: parseScore(fields.AC),
+    periodStartTime: parseScore(fields.AO),
   };
+}
+
+export function parseMatchDetailStage(feed: string): string | undefined {
+  const record = feed.split("~")[0];
+  return parseFeedRecord(record).DB;
+}
+
+export function parseMatchDetailMeta(feed: string): {
+  detailStage?: string;
+  periodStartTime?: number;
+} {
+  const fields = parseFeedRecord(feed.split("~")[0]);
+  return {
+    detailStage: fields.DB,
+    periodStartTime: parseScore(fields.DD) ?? parseScore(fields.AO),
+  };
+}
+
+export function parseMatchGoals(feed: string): MatchGoal[] {
+  const goals: MatchGoal[] = [];
+
+  for (const record of feed.split("~")) {
+    const fields = parseFeedRecord(record);
+    if (!fields.III) continue;
+
+    const eventLabel = fields.IK ?? "";
+    const isGoal =
+      eventLabel === "Goal" ||
+      eventLabel === "Penalty" ||
+      fields.IE === "3" ||
+      fields.IE === "10";
+
+    if (!isGoal || !fields.IF) continue;
+
+    goals.push({
+      minute: fields.IB ?? "",
+      playerName: fields.IF,
+      teamSide: fields.IA === "2" ? "away" : "home",
+      type:
+        eventLabel === "Penalty" || fields.IE === "10" ? "penalty" : "goal",
+    });
+  }
+
+  return goals;
 }
 
 function parseFeedBlock(block: string, teamId: string): Match[] {

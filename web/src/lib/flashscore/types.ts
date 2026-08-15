@@ -11,6 +11,13 @@ export interface TeamInfo {
   slug?: string;
 }
 
+export interface MatchGoal {
+  minute: string;
+  playerName: string;
+  teamSide: "home" | "away";
+  type: "goal" | "penalty" | "own_goal";
+}
+
 export interface Match {
   id: string;
   date: string;
@@ -24,6 +31,15 @@ export interface Match {
   tournamentId?: string;
   round?: string;
   isHome: boolean;
+  /** Raw AB feed stage code (1=scheduled, 2=live, 12=1H, 13=2H, 38=HT, 3=finished) */
+  feedStage?: string;
+  /** Stage from match detail feed (DB field) — more accurate when AB=2 */
+  detailStage?: string;
+  /** Unix timestamp when the current period clock started (AO / DD field) */
+  periodStartTime?: number;
+  /** Current match minute from feed (AC field, may lag behind) */
+  liveMinute?: number;
+  goals?: MatchGoal[];
 }
 
 export interface TeamStats {

@@ -5,10 +5,12 @@ import {
   formatMatchTeams,
   formatRelativeDate,
 } from "@/lib/utils";
+import LiveMatchClock from "./LiveMatchClock";
 
 interface HeroProps {
   nextMatch?: Match;
   lastMatch?: Match;
+  liveMatch?: Match;
 }
 
 function MatchPill({
@@ -18,7 +20,7 @@ function MatchPill({
 }: {
   label: string;
   match?: Match;
-  variant: "next" | "last";
+  variant: "live" | "next" | "last";
 }) {
   if (!match) {
     return (
@@ -33,29 +35,41 @@ function MatchPill({
 
   const venue = match.isHome ? "Hazai" : "Vendég";
 
+  const borderClass =
+    variant === "live"
+      ? "border-bfc-red bg-bfc-red/20 shadow-[0_0_24px_rgba(220,5,40,0.25)]"
+      : variant === "next"
+        ? "border-bfc-red/40 bg-bfc-red/10"
+        : "border-white/10 bg-white/5";
+
   return (
-    <div
-      className={`rounded-2xl border p-4 ${
-        variant === "next"
-          ? "border-bfc-red/40 bg-bfc-red/10"
-          : "border-white/10 bg-white/5"
-      }`}
-    >
-      <p className="text-xs uppercase tracking-[0.2em] text-white/60">{label}</p>
+    <div className={`rounded-2xl border p-4 ${borderClass}`}>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs uppercase tracking-[0.2em] text-white/60">
+          {label}
+        </p>
+        {variant === "live" && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-bfc-red px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+            <LiveMatchClock match={match} variant="minute" />
+          </span>
+        )}
+      </div>
       <p className="mt-2 font-display text-xl font-bold leading-snug text-white sm:text-2xl">
         {formatMatchTeams(match)}
       </p>
       <p className="mt-2 text-xs text-white/60">
-        {variant === "next"
-          ? formatRelativeDate(match.date)
-          : formatMatchDate(match.date)}{" "}
-        · {venue}
+        {variant === "live"
+          ? `${formatMatchDate(match.date)} · ${venue}`
+          : variant === "next"
+            ? `${formatRelativeDate(match.date)} · ${venue}`
+            : `${formatMatchDate(match.date)} · ${venue}`}
       </p>
     </div>
   );
 }
 
-export default function Hero({ nextMatch, lastMatch }: HeroProps) {
+export default function Hero({ nextMatch, lastMatch, liveMatch }: HeroProps) {
   return (
     <section className="relative w-full max-w-full overflow-hidden bg-bfc-black text-white">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(220,5,40,0.35),transparent_55%)]" />
@@ -81,6 +95,9 @@ export default function Hero({ nextMatch, lastMatch }: HeroProps) {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+          {liveMatch && (
+            <MatchPill label="Élő meccs" match={liveMatch} variant="live" />
+          )}
           <MatchPill label="Következő meccs" match={nextMatch} variant="next" />
           <MatchPill label="Utolsó meccs" match={lastMatch} variant="last" />
         </div>

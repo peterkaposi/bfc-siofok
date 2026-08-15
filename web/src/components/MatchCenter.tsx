@@ -1,14 +1,36 @@
-import { EREDMENYEK } from "@/lib/constants";
+import { CLUB, EREDMENYEK } from "@/lib/constants";
 import type { Match } from "@/lib/flashscore/types";
 import {
   formatMatchDate,
+  formatMatchGoalLabel,
   formatMatchTeams,
   formatRelativeDate,
 } from "@/lib/utils";
+import LiveMatchClock from "./LiveMatchClock";
 
 interface MatchCenterProps {
   matches: Match[];
   liveMatches: Match[];
+}
+
+function teamDisplayName(match: Match, side: "home" | "away"): string {
+  const team = side === "home" ? match.homeTeam : match.awayTeam;
+  return team.id === EREDMENYEK.teamId ? CLUB.name : team.name;
+}
+
+function MatchGoals({ match }: { match: Match }) {
+  if (!match.goals?.length) return null;
+
+  return (
+    <ul className="mt-2 space-y-1 text-sm text-black/70">
+      {match.goals.map((goal, index) => (
+        <li key={`${goal.minute}-${goal.playerName}-${index}`}>
+          ⚽ {formatMatchGoalLabel(goal)} (
+          {teamDisplayName(match, goal.teamSide)})
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 function MatchRow({ match }: { match: Match }) {
@@ -23,11 +45,15 @@ function MatchRow({ match }: { match: Match }) {
           {formatMatchTeams(match)}
         </p>
         <p className="mt-1 text-sm text-black/60">
-          {match.status === "scheduled"
-            ? formatRelativeDate(match.date)
-            : formatMatchDate(match.date)}{" "}
-          · {match.isHome ? "Hazai pálya" : "Idegenbeli"}
+          {match.status === "live" ? (
+            <LiveMatchClock match={match} variant="meta" />
+          ) : match.status === "scheduled" ? (
+            `${formatRelativeDate(match.date)} · ${match.isHome ? "Hazai pálya" : "Idegenbeli"}`
+          ) : (
+            `${formatMatchDate(match.date)} · ${match.isHome ? "Hazai pálya" : "Idegenbeli"}`
+          )}
         </p>
+        <MatchGoals match={match} />
       </div>
 
       <span
@@ -39,13 +65,15 @@ function MatchRow({ match }: { match: Match }) {
               : "bg-bfc-red/10 text-bfc-red"
         }`}
       >
-        {match.status === "live"
-          ? "Élő"
-          : match.status === "finished"
-            ? "Lezárult"
-            : match.status === "postponed"
-              ? "Elhalasztva"
-              : "Következő"}
+        {match.status === "live" ? (
+          <LiveMatchClock match={match} variant="badge" />
+        ) : match.status === "finished" ? (
+          "Lezárult"
+        ) : match.status === "postponed" ? (
+          "Elhalasztva"
+        ) : (
+          "Következő"
+        )}
       </span>
 
       <a

@@ -5,7 +5,7 @@ import MatchCenter from "@/components/MatchCenter";
 import NewsSection from "@/components/NewsSection";
 import PlayersSection from "@/components/PlayersSection";
 import StandingsSection from "@/components/StandingsSection";
-import { getTeamData } from "@/lib/flashscore/client";
+import { getTeamData, enrichLiveMatchesWithGoals, refreshTeamData } from "@/lib/flashscore/client";
 import { summarizeTeamData } from "@/lib/flashscore/parser";
 import {
   getClubHistory,
@@ -13,31 +13,46 @@ import {
   getPlayers,
   getUpcomingEvents,
 } from "@/lib/sanity/client";
+import LiveMatchAutoRefresh from "@/components/LiveMatchAutoRefresh";
 
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const [teamData, articles, events, players, history] = await Promise.all([
-    getTeamData().catch(() => ({
-      teamId: "YFzGWgOR",
-      teamName: "BFC Siófok",
-      matches: [],
-      lastUpdated: new Date().toISOString(),
-    })),
+  let teamData = await getTeamData().catch(() => ({
+    teamId: "YFzGWgOR",
+    teamName: "BFC Siófok",
+    matches: [],
+    lastUpdated: new Date().toISOString(),
+  }));
+
+  let summary = summarizeTeamData(teamData);
+
+  if (summary.liveMatches.length > 0) {
+    teamData = await refreshTeamData().catch(() => teamData);
+    summary = summarizeTeamData(teamData);
+  }
+
+  const [articles, events, players, history] = await Promise.all([
     getNewsArticles(),
     getUpcomingEvents(),
     getPlayers(),
     getClubHistory(),
   ]);
 
-  const summary = summarizeTeamData(teamData);
+  const liveMatches = await enrichLiveMatchesWithGoals(summary.liveMatches);
+  const liveMatch = liveMatches[0];
 
   return (
     <>
-      <Hero nextMatch={summary.nextMatch} lastMatch={summary.lastMatch} />
+      {liveMatch && <LiveMatchAutoRefresh />}
+      <Hero
+        nextMatch={summary.nextMatch}
+        lastMatch={summary.lastMatch}
+        liveMatch={liveMatch}
+      />
       <MatchCenter
         matches={teamData.matches}
-        liveMatches={summary.liveMatches}
+        liveMatches={liveMatches}
       />
       <StandingsSection stats={summary.stats} />
       <PlayersSection players={players} />
