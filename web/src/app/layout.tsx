@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     "BFC",
     "foci",
     "NB III",
-    "Balatonfüred",
+    "Siófok",
     "klub",
   ],
   openGraph: {

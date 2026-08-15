@@ -3,8 +3,8 @@ export const CLUB = {
   shortName: "BFC",
   slug: "balatonfuredi-fc",
   tagline: "Piros-fekete szenvedély a Balaton partján",
-  city: "Balatonfüred",
-  founded: 1906,
+  city: "Siófok",
+  founded: 1921,
   stadium: "Városi Sportpálya",
 } as const;
 
