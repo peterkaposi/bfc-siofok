@@ -3,6 +3,7 @@ import { createImageUrlBuilder, type SanityImageSource } from "@sanity/image-url
 import { client, isSanityConfigured } from "@/sanity/client";
 import {
   CLUB_HISTORY_QUERY,
+  EVENT_BY_SLUG_QUERY,
   NEWS_ARTICLE_BY_SLUG_QUERY,
   NEWS_ARTICLES_QUERY,
   PLAYERS_QUERY,
@@ -28,6 +29,7 @@ export interface NewsArticleDetail extends NewsArticle {
 export interface ClubEvent {
   _id: string;
   title: string;
+  slug?: string;
   date: string;
   location?: string;
   description?: string;
@@ -182,13 +184,55 @@ export async function getUpcomingEvents(limit = 4): Promise<ClubEvent[]> {
   if (!isSanityConfigured) return [];
 
   try {
-    return await client.fetch<ClubEvent[]>(
-      UPCOMING_EVENTS_QUERY,
-      { today: getTodayDateStringBudapest(), limit },
-      { next: { revalidate: 60 } },
-    );
+    const events = await client.fetch<
+      Array<{
+        _id: string;
+        title: string;
+        slug?: { current: string };
+        date: string;
+        location?: string;
+        description?: string;
+      }>
+    >(UPCOMING_EVENTS_QUERY, { today: getTodayDateStringBudapest(), limit }, { next: { revalidate: 60 } });
+
+    return events.map((event) => ({
+      _id: event._id,
+      title: event.title,
+      slug: event.slug?.current,
+      date: event.date,
+      location: event.location,
+      description: event.description,
+    }));
   } catch {
     return [];
+  }
+}
+
+export async function getEventBySlug(slug: string): Promise<ClubEvent | null> {
+  if (!isSanityConfigured) return null;
+
+  try {
+    const event = await client.fetch<{
+      _id: string;
+      title: string;
+      slug: { current: string };
+      date: string;
+      location?: string;
+      description?: string;
+    } | null>(EVENT_BY_SLUG_QUERY, { slug }, { next: { revalidate: 60 } });
+
+    if (!event) return null;
+
+    return {
+      _id: event._id,
+      title: event.title,
+      slug: event.slug.current,
+      date: event.date,
+      location: event.location,
+      description: event.description,
+    };
+  } catch {
+    return null;
   }
 }
 

@@ -29,6 +29,18 @@ export const UPCOMING_EVENTS_QUERY = defineQuery(`
   *[_type == "event" && string::split(date, "T")[0] >= $today] | order(date asc)[0...$limit]{
     _id,
     title,
+    slug,
+    date,
+    location,
+    description
+  }
+`);
+
+export const EVENT_BY_SLUG_QUERY = defineQuery(`
+  *[_type == "event" && slug.current == $slug][0]{
+    _id,
+    title,
+    slug,
     date,
     location,
     description

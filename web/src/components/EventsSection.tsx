@@ -1,8 +1,33 @@
+import Link from "next/link";
 import type { ClubEvent } from "@/lib/sanity/client";
 import { formatEventDate } from "@/lib/utils";
 
 interface EventsSectionProps {
   events: ClubEvent[];
+}
+
+function EventCardContent({ event }: { event: ClubEvent }) {
+  return (
+    <>
+      <p className="text-xs uppercase tracking-[0.15em] text-bfc-red">
+        {formatEventDate(event.date)}
+      </p>
+      <h3 className="mt-2 font-display text-2xl font-bold text-bfc-black group-hover:text-bfc-red">
+        {event.title}
+      </h3>
+      {event.location && (
+        <p className="mt-2 text-sm text-black/60">{event.location}</p>
+      )}
+      {event.description && (
+        <p className="mt-3 line-clamp-2 text-sm leading-6 text-black/70">
+          {event.description}
+        </p>
+      )}
+      {event.slug && (
+        <p className="mt-4 text-sm font-semibold text-bfc-red">Részletek →</p>
+      )}
+    </>
+  );
 }
 
 export default function EventsSection({ events }: EventsSectionProps) {
@@ -29,27 +54,24 @@ export default function EventsSection({ events }: EventsSectionProps) {
           </div>
         ) : (
           <div className="mt-10 grid gap-4">
-            {events.map((event) => (
-              <article
-                key={event._id}
-                className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm"
-              >
-                <p className="text-xs uppercase tracking-[0.15em] text-bfc-red">
-                  {formatEventDate(event.date)}
-                </p>
-                <h3 className="mt-2 font-display text-2xl font-bold text-bfc-black">
-                  {event.title}
-                </h3>
-                {event.location && (
-                  <p className="mt-2 text-sm text-black/60">{event.location}</p>
-                )}
-                {event.description && (
-                  <p className="mt-3 text-sm leading-6 text-black/70">
-                    {event.description}
-                  </p>
-                )}
-              </article>
-            ))}
+            {events.map((event) =>
+              event.slug ? (
+                <Link
+                  key={event._id}
+                  href={`/esemenyek/${event.slug}`}
+                  className="group block rounded-2xl border border-black/10 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-bfc-red/30 hover:shadow-md"
+                >
+                  <EventCardContent event={event} />
+                </Link>
+              ) : (
+                <article
+                  key={event._id}
+                  className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm"
+                >
+                  <EventCardContent event={event} />
+                </article>
+              ),
+            )}
           </div>
         )}
       </div>

@@ -33,11 +33,11 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
   }
 
   return (
-    <article className="bg-white py-12 sm:py-16">
+    <article className="bg-white py-12 text-bfc-black sm:py-16">
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <Link
           href="/#hirek"
-          className="inline-flex text-sm font-semibold text-bfc-red transition hover:text-red-700"
+          className="inline-flex text-sm font-semibold text-zinc-500 transition hover:text-zinc-700"
         >
           ← Vissza a hírekhez
         </Link>
