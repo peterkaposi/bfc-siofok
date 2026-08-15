@@ -105,7 +105,7 @@ export default function Footer({ sponsors }: FooterProps) {
                 const content = (
                   <>
                     {sponsor.logoUrl ? (
-                      <div className="flex h-24 min-w-[140px] items-center justify-center rounded-xl bg-white/5 px-4 py-3">
+                      <div className="flex h-24 min-w-[140px] items-center justify-center px-4 py-3">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={sponsor.logoUrl}

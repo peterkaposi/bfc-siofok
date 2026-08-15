@@ -33,7 +33,7 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
   }
 
   return (
-    <article className="bg-white py-12 text-bfc-black sm:py-16">
+    <article className="overflow-x-hidden bg-white py-12 text-bfc-black sm:py-16">
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <Link
           href="/#hirek"
@@ -53,12 +53,14 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
           </time>
         </div>
 
-        <h1 className="mt-4 font-display text-4xl font-bold uppercase leading-tight text-bfc-black sm:text-5xl">
+        <h1 className="mt-4 break-words font-display text-4xl font-bold uppercase leading-tight text-bfc-black [overflow-wrap:anywhere] sm:text-5xl">
           {article.title}
         </h1>
 
         {article.excerpt && (
-          <p className="mt-4 text-lg leading-8 text-black/70">{article.excerpt}</p>
+          <p className="mt-4 break-words text-lg leading-8 text-black/70 [overflow-wrap:anywhere]">
+            {article.excerpt}
+          </p>
         )}
 
         {article.imageUrl && (

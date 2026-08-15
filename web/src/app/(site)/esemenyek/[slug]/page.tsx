@@ -54,7 +54,7 @@ export default async function EventPage({ params }: EventPageProps) {
         )}
 
         {event.description ? (
-          <p className="mt-8 whitespace-pre-line text-base leading-8 text-black/80">
+          <p className="mt-8 whitespace-pre-line break-words text-base leading-8 text-black/80 [overflow-wrap:anywhere]">
             {event.description}
           </p>
         ) : (

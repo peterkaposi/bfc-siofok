@@ -37,7 +37,7 @@ export const UPCOMING_EVENTS_QUERY = defineQuery(`
 `);
 
 export const EVENT_BY_SLUG_QUERY = defineQuery(`
-  *[_type == "event" && slug.current == $slug][0]{
+  *[_type == "event" && (slug.current == $slug || _id == $slug)][0]{
     _id,
     title,
     slug,

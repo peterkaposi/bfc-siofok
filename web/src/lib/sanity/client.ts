@@ -35,6 +35,10 @@ export interface ClubEvent {
   description?: string;
 }
 
+export function getEventPath(event: Pick<ClubEvent, "_id" | "slug">): string {
+  return `/esemenyek/${event.slug ?? event._id}`;
+}
+
 export interface Player {
   _id: string;
   name: string;
@@ -215,7 +219,7 @@ export async function getEventBySlug(slug: string): Promise<ClubEvent | null> {
     const event = await client.fetch<{
       _id: string;
       title: string;
-      slug: { current: string };
+      slug?: { current: string };
       date: string;
       location?: string;
       description?: string;
@@ -226,7 +230,7 @@ export async function getEventBySlug(slug: string): Promise<ClubEvent | null> {
     return {
       _id: event._id,
       title: event.title,
-      slug: event.slug.current,
+      slug: event.slug?.current,
       date: event.date,
       location: event.location,
       description: event.description,
