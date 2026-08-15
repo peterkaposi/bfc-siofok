@@ -2,7 +2,7 @@ export const CLUB = {
   name: "BFC Siófok",
   shortName: "BFC Siófok",
   slug: "bfc-siofok",
-  tagline: "Piros-fekete szenvedély a Balaton partján",
+  tagline: "Labdarúgás szenvedély a Balaton partján",
   city: "Siófok",
   founded: 1921,
   stadium: "Révész Géza utcai stadion",
@@ -24,7 +24,8 @@ export const EREDMENYEK = {
 
 export const SOCIAL = {
   facebook: "https://www.facebook.com/bfcsiofok",
-  instagram: "",
+  instagram: "https://www.instagram.com/media_bfcsiofok/",
+  tiktok: "https://www.tiktok.com/@media.bfcsiofok",
   youtube: "",
 } as const;
 

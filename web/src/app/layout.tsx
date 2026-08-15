@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: "%s | BFC Siófok",
   },
   description:
-    "A BFC Siófok hivatalos weboldala – piros-fekete szenvedély a Balaton partján.",
+    "A BFC Siófok hivatalos weboldala – Labdarúgás szenvedély a Balaton partján.",
   keywords: [
     "BFC Siófok",
     "foci",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "BFC Siófok",
-    description: "Piros-fekete szenvedély a Balaton partján",
+    description: "Labdarúgás szenvedély a Balaton partján",
     locale: "hu_HU",
     type: "website",
   },

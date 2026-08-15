@@ -77,12 +77,12 @@ export default function Footer({ sponsors }: FooterProps) {
             </li>
             <li>
               <a
-                href={SOCIAL.youtube}
+                href={SOCIAL.tiktok}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white/80 hover:text-bfc-red"
               >
-                YouTube
+                TikTok
               </a>
             </li>
           </ul>

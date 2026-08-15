@@ -89,7 +89,7 @@ export const PLACEHOLDER_NEWS: NewsArticle[] = [
   },
   {
     _id: "placeholder-2",
-    title: "Piros-fekete szenvedély a Balaton partján",
+    title: "Labdarúgás szenvedély a Balaton partján",
     slug: "piros-fekete-szenvedely",
     excerpt: "Minden mérkőzés, minden hír — egy helyen.",
     category: "Klub",
