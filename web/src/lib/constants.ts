@@ -5,7 +5,7 @@ export const CLUB = {
   tagline: "Piros-fekete szenvedély a Balaton partján",
   city: "Siófok",
   founded: 1921,
-  stadium: "Városi Sportpálya",
+  stadium: "Révész Géza utcai stadion",
   email: "bfcsiofokkft@gmail.com",
 } as const;
 
