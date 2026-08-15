@@ -5,6 +5,7 @@ export default defineCliConfig({
     projectId: "ko8gzdnf",
     dataset: "production",
   },
+  studioHost: "bfc-siofok",
   typegen: {
     enabled: true,
     path: "../web/src/**/*.{ts,tsx}",
