@@ -52,7 +52,7 @@ function MatchRow({ match }: { match: Match }) {
         href={`${EREDMENYEK.baseUrl}/merkozes/foci/${match.id}/`}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-sm font-semibold text-bfc-red hover:underline"
+        className="inline-flex shrink-0 items-center justify-center rounded-full bg-bfc-red px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
       >
         Részletek
       </a>

@@ -18,6 +18,8 @@ export const EREDMENYEK = {
   fixturesUrl:
     "https://www.eredmenyek.com/csapat/siofok/YFzGWgOR/fixtures/",
   resultsUrl: "https://www.eredmenyek.com/csapat/siofok/YFzGWgOR/results/",
+  /** Primary league label fragment used to filter season stats */
+  primaryLeague: "NB III",
 } as const;
 
 export const SOCIAL = {

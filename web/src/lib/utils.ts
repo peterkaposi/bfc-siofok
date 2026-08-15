@@ -9,9 +9,7 @@ const dateFormatter = new Intl.DateTimeFormat("hu-HU", {
   minute: "2-digit",
 });
 
-const shortDateFormatter = new Intl.DateTimeFormat("hu-HU", {
-  month: "short",
-  day: "numeric",
+const timeFormatter = new Intl.DateTimeFormat("hu-HU", {
   hour: "2-digit",
   minute: "2-digit",
 });
@@ -25,6 +23,22 @@ const eventDateFormatter = new Intl.DateTimeFormat("hu-HU", {
   minute: "2-digit",
 });
 
+function formatTime(date: Date): string {
+  return timeFormatter.format(date);
+}
+
+function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+function startOfDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
 export function formatMatchDate(date: string): string {
   return dateFormatter.format(new Date(date));
 }
@@ -32,27 +46,29 @@ export function formatMatchDate(date: string): string {
 export function formatRelativeDate(date: string): string {
   const target = new Date(date);
   const now = new Date();
-  const diffMs = target.getTime() - now.getTime();
-  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  const diffDays = Math.round(
+    (startOfDay(target).getTime() - startOfDay(now).getTime()) /
+      (1000 * 60 * 60 * 24),
+  );
 
-  if (Math.abs(diffDays) === 0) {
-    return `Ma, ${shortDateFormatter.format(target).split(", ").slice(1).join(", ")}`;
+  if (isSameDay(target, now)) {
+    return `Ma, ${formatTime(target)}`;
   }
 
   if (diffDays === 1) {
-    return `Holnap, ${shortDateFormatter.format(target).split(", ").slice(1).join(", ")}`;
+    return `Holnap, ${formatTime(target)}`;
   }
 
   if (diffDays === -1) {
-    return `Tegnap, ${shortDateFormatter.format(target).split(", ").slice(1).join(", ")}`;
+    return `Tegnap, ${formatTime(target)}`;
   }
 
   if (diffDays > 1 && diffDays <= 7) {
-    return `${diffDays} nap múlva`;
+    return `${diffDays} nap múlva, ${formatTime(target)}`;
   }
 
   if (diffDays < -1 && diffDays >= -7) {
-    return `${Math.abs(diffDays)} napja`;
+    return `${Math.abs(diffDays)} napja, ${formatTime(target)}`;
   }
 
   return formatMatchDate(date);

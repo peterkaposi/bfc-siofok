@@ -15,7 +15,7 @@ function LogoMark() {
     return (
       <span
         aria-hidden
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-bfc-red px-1 text-[9px] font-bold leading-tight text-white"
+        className="flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center rounded-full bg-bfc-red px-1 text-[10px] font-bold leading-tight text-white sm:h-20 sm:w-20"
       >
         {CLUB.shortName}
       </span>
@@ -26,9 +26,9 @@ function LogoMark() {
     <Image
       src={LOGO_CANDIDATES[candidateIndex]}
       alt={`${CLUB.name} logó`}
-      width={44}
-      height={44}
-      className="h-11 w-11 shrink-0 rounded-full object-cover"
+      width={80}
+      height={80}
+      className="h-[4.5rem] w-[4.5rem] shrink-0 object-contain sm:h-20 sm:w-20"
       onError={() => {
         if (candidateIndex < LOGO_CANDIDATES.length - 1) {
           setCandidateIndex((index) => index + 1);
@@ -52,8 +52,8 @@ const navItems = [
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-bfc-black/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <Link href="/" className="flex min-w-0 items-center gap-3">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:px-6 sm:py-3">
+        <Link href="/" className="flex min-w-0 items-center gap-3 sm:gap-4">
           <LogoMark />
           <div className="min-w-0">
             <p className="truncate font-display text-lg font-bold uppercase tracking-wide text-white">

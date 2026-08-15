@@ -1,5 +1,5 @@
 import { EREDMENYEK } from "@/lib/constants";
-import type { Match, MatchStatus, TeamData, TeamSummary } from "./types";
+import type { Match, MatchStatus, TeamData, TeamStats, TeamSummary } from "./types";
 
 const FEED_KEYS = [
   "fixtures",
@@ -167,12 +167,16 @@ function parseFeedBlock(block: string, teamId: string): Match[] {
   const matches: Match[] = [];
   const seen = new Set<string>();
   let competition: string | undefined;
+  let stageId: string | undefined;
+  let tournamentId: string | undefined;
 
   for (const record of block.split("~")) {
     const fields = parseFeedRecord(record);
 
     if (fields.ZA && !fields.AA) {
       competition = fields.ZA;
+      stageId = fields.ZC;
+      tournamentId = fields.ZE;
       continue;
     }
 
@@ -185,9 +189,9 @@ function parseFeedBlock(block: string, teamId: string): Match[] {
     const parsed = recordToMatch(fields, teamId);
     if (!parsed || seen.has(parsed.id)) continue;
 
-    if (!parsed.competition && competition) {
-      parsed.competition = competition;
-    }
+    parsed.competition = competition;
+    parsed.stageId = stageId;
+    parsed.tournamentId = tournamentId;
 
     seen.add(parsed.id);
     matches.push(parsed);
@@ -226,24 +230,54 @@ export function parseFlashscoreHtml(
   };
 }
 
-export function summarizeTeamData(data: TeamData): TeamSummary {
-  const now = Date.now();
+function isPrimaryLeagueMatch(match: Match): boolean {
+  return match.competition?.includes(EREDMENYEK.primaryLeague) ?? false;
+}
 
-  const finished = data.matches
-    .filter((match) => match.status === "finished")
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+function getCurrentSeasonStageId(matches: Match[]): string | undefined {
+  const leagueMatches = matches.filter(isPrimaryLeagueMatch);
 
-  const upcoming = data.matches
-    .filter(
-      (match) =>
-        (match.status === "scheduled" ||
-          match.status === "postponed" ||
-          match.status === "live") &&
-        new Date(match.date).getTime() >= now - 2 * 60 * 60 * 1000,
-    )
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const stagesWithFixtures = leagueMatches.filter(
+    (match) =>
+      match.stageId &&
+      (match.status === "scheduled" ||
+        match.status === "postponed" ||
+        match.status === "live"),
+  );
 
-  const liveMatches = data.matches.filter((match) => match.status === "live");
+  if (stagesWithFixtures.length > 0) {
+    const byStage = new Map<string, number>();
+
+    for (const match of stagesWithFixtures) {
+      const id = match.stageId!;
+      const kickoff = new Date(match.date).getTime();
+      const nearest = byStage.get(id);
+
+      if (nearest === undefined || Math.abs(kickoff - Date.now()) < Math.abs(nearest - Date.now())) {
+        byStage.set(id, kickoff);
+      }
+    }
+
+    return [...byStage.entries()].sort(
+      (a, b) => Math.abs(a[1] - Date.now()) - Math.abs(b[1] - Date.now()),
+    )[0]?.[0];
+  }
+
+  return leagueMatches
+    .filter((match) => match.status === "finished" && match.stageId)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
+    ?.stageId;
+}
+
+function computeSeasonStats(matches: Match[]): TeamStats {
+  const stageId = getCurrentSeasonStageId(matches);
+
+  const finished = matches.filter(
+    (match) =>
+      match.status === "finished" &&
+      isPrimaryLeagueMatch(match) &&
+      (!stageId || match.stageId === stageId),
+  );
 
   let wins = 0;
   let draws = 0;
@@ -268,17 +302,39 @@ export function summarizeTeamData(data: TeamData): TeamSummary {
   }
 
   return {
+    played: finished.length,
+    wins,
+    draws,
+    losses,
+    goalsFor,
+    goalsAgainst,
+    points: wins * 3 + draws,
+  };
+}
+
+export function summarizeTeamData(data: TeamData): TeamSummary {
+  const now = Date.now();
+
+  const finished = data.matches
+    .filter((match) => match.status === "finished")
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  const upcoming = data.matches
+    .filter(
+      (match) =>
+        (match.status === "scheduled" ||
+          match.status === "postponed" ||
+          match.status === "live") &&
+        new Date(match.date).getTime() >= now - 2 * 60 * 60 * 1000,
+    )
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  const liveMatches = data.matches.filter((match) => match.status === "live");
+
+  return {
     lastMatch: finished[0],
     nextMatch: upcoming.find((match) => match.status !== "live") ?? upcoming[0],
     liveMatches,
-    stats: {
-      played: finished.length,
-      wins,
-      draws,
-      losses,
-      goalsFor,
-      goalsAgainst,
-      points: wins * 3 + draws,
-    },
+    stats: computeSeasonStats(data.matches),
   };
 }

@@ -20,6 +20,8 @@ export interface Match {
   awayScore?: number;
   status: MatchStatus;
   competition?: string;
+  stageId?: string;
+  tournamentId?: string;
   round?: string;
   isHome: boolean;
 }
