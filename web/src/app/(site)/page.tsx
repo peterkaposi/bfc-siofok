@@ -5,8 +5,8 @@ import MatchCenter from "@/components/MatchCenter";
 import NewsSection from "@/components/NewsSection";
 import PlayersSection from "@/components/PlayersSection";
 import StandingsSection from "@/components/StandingsSection";
-import { getTeamData, enrichLiveMatchesWithGoals, refreshTeamData } from "@/lib/flashscore/client";
-import { summarizeTeamData } from "@/lib/flashscore/parser";
+import { getTeamData, reconcileTeamData, refreshTeamData } from "@/lib/flashscore/client";
+import { hasMatchInLiveWindow, shouldPollLiveMatches, summarizeTeamData } from "@/lib/flashscore/parser";
 import {
   getClubHistory,
   getNewsArticles,
@@ -26,11 +26,16 @@ export default async function HomePage() {
   }));
 
   let summary = summarizeTeamData(teamData);
+  const inLiveWindow = hasMatchInLiveWindow(teamData.matches);
 
-  if (summary.liveMatches.length > 0) {
+  if (summary.liveMatches.length > 0 || inLiveWindow) {
     teamData = await refreshTeamData().catch(() => teamData);
+    teamData = await reconcileTeamData(teamData);
     summary = summarizeTeamData(teamData);
   }
+
+  const liveMatches = summary.liveMatches;
+  const liveMatch = liveMatches[0];
 
   const [articles, events, players, history] = await Promise.all([
     getNewsArticles(),
@@ -39,12 +44,9 @@ export default async function HomePage() {
     getClubHistory(),
   ]);
 
-  const liveMatches = await enrichLiveMatchesWithGoals(summary.liveMatches);
-  const liveMatch = liveMatches[0];
-
   return (
     <>
-      {liveMatch && <LiveMatchAutoRefresh />}
+      {shouldPollLiveMatches(teamData.matches) && <LiveMatchAutoRefresh />}
       <Hero
         nextMatch={summary.nextMatch}
         lastMatch={summary.lastMatch}

@@ -102,9 +102,11 @@ async function fetchMatchLiveDetail(matchId: string) {
     fetchMatchDetailFeed(matchId),
   ]);
 
+  const meta = parseMatchDetailMeta(detailFeed);
+
   return {
     goals: parseMatchGoals(summaryFeed),
-    ...parseMatchDetailMeta(detailFeed),
+    ...meta,
   };
 }
 
@@ -113,30 +115,42 @@ export async function fetchMatchGoals(matchId: string) {
   return parseMatchGoals(feed);
 }
 
-export async function enrichLiveMatchesWithGoals(
-  matches: Match[],
-): Promise<Match[]> {
-  const live = matches.filter((match) => match.status === "live");
-  if (live.length === 0) return matches;
+/** Verify live matches against detail feed; mark finished and attach goals. */
+export async function reconcileTeamData(data: TeamData): Promise<TeamData> {
+  const liveCandidates = data.matches.filter((match) => match.status === "live");
+  if (liveCandidates.length === 0) return data;
 
-  const detailsById = new Map<
+  const detailById = new Map<
     string,
     Awaited<ReturnType<typeof fetchMatchLiveDetail>>
   >();
 
   await Promise.all(
-    live.map(async (match) => {
+    liveCandidates.map(async (match) => {
       try {
-        detailsById.set(match.id, await fetchMatchLiveDetail(match.id));
+        detailById.set(match.id, await fetchMatchLiveDetail(match.id));
       } catch {
-        detailsById.set(match.id, { goals: [], detailStage: undefined });
+        detailById.set(match.id, {
+          goals: [],
+          isFinished: false,
+        });
       }
     }),
   );
 
-  return matches.map((match) => {
-    const detail = detailsById.get(match.id);
+  const matches = data.matches.map((match) => {
+    const detail = detailById.get(match.id);
     if (!detail) return match;
+
+    if (detail.isFinished) {
+      return {
+        ...match,
+        status: "finished" as const,
+        feedStage: "3",
+        detailStage: "3",
+        goals: detail.goals,
+      };
+    }
 
     return {
       ...match,
@@ -145,4 +159,10 @@ export async function enrichLiveMatchesWithGoals(
       periodStartTime: detail.periodStartTime ?? match.periodStartTime,
     };
   });
+
+  return {
+    ...data,
+    matches,
+    lastUpdated: new Date().toISOString(),
+  };
 }

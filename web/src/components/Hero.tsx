@@ -3,7 +3,7 @@ import type { Match } from "@/lib/flashscore/types";
 import {
   formatMatchDate,
   formatMatchTeams,
-  formatRelativeDate,
+  formatUpcomingMatchDate,
 } from "@/lib/utils";
 import LiveMatchClock from "./LiveMatchClock";
 
@@ -62,7 +62,7 @@ function MatchPill({
         {variant === "live"
           ? `${formatMatchDate(match.date)} · ${venue}`
           : variant === "next"
-            ? `${formatRelativeDate(match.date)} · ${venue}`
+            ? `${formatUpcomingMatchDate(match.date)} · ${venue}`
             : `${formatMatchDate(match.date)} · ${venue}`}
       </p>
     </div>

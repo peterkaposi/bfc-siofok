@@ -14,17 +14,11 @@ export default function Footer({ sponsors }: FooterProps) {
             {CLUB.name}
           </p>
           <p className="mt-2 text-sm text-white/70">{CLUB.tagline}</p>
-          <a
-            href={`mailto:${CLUB.email}`}
-            className="mt-3 inline-block text-sm text-white/80 transition hover:text-bfc-red"
-          >
-            {CLUB.email}
-          </a>
         </div>
 
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.15em] text-white/60">
-            Oldal
+            Oldalak
           </p>
           <ul className="mt-4 space-y-2 text-sm">
             {NAV_ITEMS.map((item) => (
@@ -73,6 +67,32 @@ export default function Footer({ sponsors }: FooterProps) {
               </a>
             </li>
           </ul>
+
+          <p className="mt-8 text-sm font-semibold uppercase tracking-[0.15em] text-white/60">
+            Írj nekünk
+          </p>
+          <a
+            href={`mailto:${CLUB.email}`}
+            className="mt-4 inline-flex items-center gap-3 text-sm text-white/80 transition hover:text-bfc-red"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-5 w-5"
+                aria-hidden
+              >
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m2 7 10 7 10-7" />
+              </svg>
+            </span>
+            <span>{CLUB.email}</span>
+          </a>
         </div>
       </div>
 

@@ -122,6 +122,36 @@ function resolveMatchStatus(
   return "scheduled";
 }
 
+/** True while a match may still be in play or just ended (needs fresh data). */
+export function hasMatchInLiveWindow(matches: Match[]): boolean {
+  const now = Date.now();
+
+  return matches.some((match) => {
+    const kickoff = new Date(match.date).getTime();
+    return (
+      kickoff <= now + KICKOFF_BUFFER_MS && now <= kickoff + MATCH_WINDOW_MS
+    );
+  });
+}
+
+/** True while we should poll for live score / full-time updates. */
+export function shouldPollLiveMatches(matches: Match[]): boolean {
+  if (matches.some((match) => match.status === "live")) {
+    return true;
+  }
+
+  const now = Date.now();
+
+  return matches.some((match) => {
+    if (match.status === "finished") return false;
+
+    const kickoff = new Date(match.date).getTime();
+    return (
+      kickoff <= now + KICKOFF_BUFFER_MS && now <= kickoff + MATCH_WINDOW_MS
+    );
+  });
+}
+
 function timestampToIso(raw?: string): string | null {
   if (!raw) return null;
   const timestamp = Number.parseInt(raw, 10);
@@ -184,11 +214,16 @@ export function parseMatchDetailStage(feed: string): string | undefined {
 export function parseMatchDetailMeta(feed: string): {
   detailStage?: string;
   periodStartTime?: number;
+  isFinished: boolean;
 } {
   const fields = parseFeedRecord(feed.split("~")[0]);
+  const detailStage = fields.DB ?? fields.DA;
+  const isFinished = detailStage === "3" || fields.DA === "3";
+
   return {
     detailStage: fields.DB,
     periodStartTime: parseScore(fields.DD) ?? parseScore(fields.AO),
+    isFinished,
   };
 }
 

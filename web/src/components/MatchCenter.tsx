@@ -4,7 +4,7 @@ import {
   formatMatchDate,
   formatMatchGoalLabel,
   formatMatchTeams,
-  formatRelativeDate,
+  formatUpcomingMatchDate,
 } from "@/lib/utils";
 import LiveMatchClock from "./LiveMatchClock";
 
@@ -48,7 +48,7 @@ function MatchRow({ match }: { match: Match }) {
           {match.status === "live" ? (
             <LiveMatchClock match={match} variant="meta" />
           ) : match.status === "scheduled" ? (
-            `${formatRelativeDate(match.date)} · ${match.isHome ? "Hazai pálya" : "Idegenbeli"}`
+            `${formatUpcomingMatchDate(match.date)} · ${match.isHome ? "Hazai pálya" : "Idegenbeli"}`
           ) : (
             `${formatMatchDate(match.date)} · ${match.isHome ? "Hazai pálya" : "Idegenbeli"}`
           )}

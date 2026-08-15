@@ -91,6 +91,30 @@ export function formatRelativeDate(date: string): string {
   return formatMatchDate(date);
 }
 
+/** Upcoming match: full date, with relative hint in parentheses when close. */
+export function formatUpcomingMatchDate(date: string): string {
+  const target = new Date(date);
+  const now = new Date();
+  const diffDays = dayDiff(target, now);
+  const formatted = formatMatchDate(date);
+
+  if (diffDays < 0) return formatted;
+
+  if (isSameDay(target, now)) {
+    return `${formatted} (ma)`;
+  }
+
+  if (diffDays === 1) {
+    return `${formatted} (holnap)`;
+  }
+
+  if (diffDays <= 7) {
+    return `${formatted} (${diffDays} nap múlva)`;
+  }
+
+  return formatted;
+}
+
 export function formatEventDate(date: string): string {
   return eventDateFormatter.format(new Date(date));
 }
@@ -135,6 +159,10 @@ export function computeLiveMinute(
   if (match.status !== "live") return null;
 
   const stage = resolveLiveStage(match);
+
+  if (stage === "3" || match.feedStage === "3" || match.detailStage === "3") {
+    return null;
+  }
 
   if (stage && HALFTIME_STAGES.has(stage)) {
     return "Félidő";
