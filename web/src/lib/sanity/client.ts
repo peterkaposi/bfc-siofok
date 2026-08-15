@@ -1,7 +1,13 @@
 import { createImageUrlBuilder, type SanityImageSource } from "@sanity/image-url";
 
 import { client, isSanityConfigured } from "@/sanity/client";
-import { NEWS_ARTICLES_QUERY, UPCOMING_EVENTS_QUERY } from "@/sanity/queries";
+import {
+  CLUB_HISTORY_QUERY,
+  NEWS_ARTICLES_QUERY,
+  PLAYERS_QUERY,
+  SPONSORS_QUERY,
+  UPCOMING_EVENTS_QUERY,
+} from "@/sanity/queries";
 
 export interface NewsArticle {
   _id: string;
@@ -21,11 +27,49 @@ export interface ClubEvent {
   description?: string;
 }
 
+export interface Player {
+  _id: string;
+  name: string;
+  position?: string;
+  number?: number;
+  photoUrl?: string;
+}
+
+export interface ClubHistory {
+  _id: string;
+  title: string;
+  body: PortableTextBlock[];
+}
+
+export interface Sponsor {
+  _id: string;
+  name: string;
+  logoUrl?: string;
+  url?: string;
+}
+
+interface PortableTextSpan {
+  _type: "span";
+  text: string;
+  marks?: string[];
+}
+
+export interface PortableTextBlock {
+  _type: "block";
+  style?: string;
+  children?: PortableTextSpan[];
+}
+
 const builder = createImageUrlBuilder(client);
 
 function buildImageUrl(source: SanityImageSource | undefined): string | undefined {
   if (!source) return undefined;
   return builder.image(source).width(800).height(450).fit("crop").url();
+}
+
+function buildLogoUrl(source: SanityImageSource | undefined): string | undefined {
+  if (!source) return undefined;
+  return builder.image(source).width(240).height(120).fit("max").url();
 }
 
 export const PLACEHOLDER_NEWS: NewsArticle[] = [
@@ -89,6 +133,70 @@ export async function getUpcomingEvents(limit = 4): Promise<ClubEvent[]> {
       { now: new Date().toISOString(), limit },
       { next: { revalidate: 60 } },
     );
+  } catch {
+    return [];
+  }
+}
+
+export async function getPlayers(): Promise<Player[]> {
+  if (!isSanityConfigured) return [];
+
+  try {
+    const players = await client.fetch<
+      Array<{
+        _id: string;
+        name: string;
+        position?: string;
+        number?: number;
+        photo?: SanityImageSource;
+      }>
+    >(PLAYERS_QUERY, {}, { next: { revalidate: 60 } });
+
+    return players.map((player) => ({
+      _id: player._id,
+      name: player.name,
+      position: player.position,
+      number: player.number,
+      photoUrl: buildImageUrl(player.photo),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function getClubHistory(): Promise<ClubHistory | null> {
+  if (!isSanityConfigured) return null;
+
+  try {
+    return await client.fetch<ClubHistory | null>(
+      CLUB_HISTORY_QUERY,
+      {},
+      { next: { revalidate: 60 } },
+    );
+  } catch {
+    return null;
+  }
+}
+
+export async function getSponsors(): Promise<Sponsor[]> {
+  if (!isSanityConfigured) return [];
+
+  try {
+    const sponsors = await client.fetch<
+      Array<{
+        _id: string;
+        name: string;
+        logo?: SanityImageSource;
+        url?: string;
+      }>
+    >(SPONSORS_QUERY, {}, { next: { revalidate: 60 } });
+
+    return sponsors.map((sponsor) => ({
+      _id: sponsor._id,
+      name: sponsor.name,
+      url: sponsor.url,
+      logoUrl: buildLogoUrl(sponsor.logo),
+    }));
   } catch {
     return [];
   }

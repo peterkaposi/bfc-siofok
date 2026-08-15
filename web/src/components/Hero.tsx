@@ -65,9 +65,6 @@ export default function Hero({ nextMatch, lastMatch }: HeroProps) {
 
       <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:py-20">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-bfc-red">
-            {CLUB.shortName}
-          </p>
           <h1 className="mt-4 font-display text-4xl font-bold uppercase leading-tight sm:text-5xl lg:text-6xl">
             {CLUB.name}
           </h1>

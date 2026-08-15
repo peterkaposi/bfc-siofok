@@ -2,13 +2,14 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 
 import { schemaTypes } from "./schemaTypes";
+import { structure } from "./structure";
 
 export default defineConfig({
   name: "default",
   title: "BFC Siófok",
   projectId: "ko8gzdnf",
   dataset: "production",
-  plugins: [structureTool()],
+  plugins: [structureTool({ structure })],
   schema: {
     types: schemaTypes,
   },

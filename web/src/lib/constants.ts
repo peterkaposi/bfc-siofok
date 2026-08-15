@@ -1,7 +1,7 @@
 export const CLUB = {
   name: "BFC Siófok",
-  shortName: "BFC",
-  slug: "balatonfuredi-fc",
+  shortName: "BFC Siófok",
+  slug: "bfc-siofok",
   tagline: "Piros-fekete szenvedély a Balaton partján",
   city: "Siófok",
   founded: 1921,
@@ -11,20 +11,18 @@ export const CLUB = {
 export const EREDMENYEK = {
   baseUrl: "https://www.eredmenyek.com",
   teamId: "YFzGWgOR",
-  teamSlug: "balatonfuredi-fc",
-  teamUrl: "https://www.eredmenyek.com/csapat/balatonfuredi-fc/YFzGWgOR/",
-  standingsUrl:
-    "https://www.eredmenyek.com/csapat/balatonfuredi-fc/YFzGWgOR/tabella/",
+  teamSlug: "siofok",
+  teamUrl: "https://www.eredmenyek.com/csapat/siofok/YFzGWgOR/",
+  standingsUrl: "https://www.eredmenyek.com/csapat/siofok/YFzGWgOR/tabella/",
   fixturesUrl:
-    "https://www.eredmenyek.com/csapat/balatonfuredi-fc/YFzGWgOR/fixtures/",
-  resultsUrl:
-    "https://www.eredmenyek.com/csapat/balatonfuredi-fc/YFzGWgOR/results/",
+    "https://www.eredmenyek.com/csapat/siofok/YFzGWgOR/fixtures/",
+  resultsUrl: "https://www.eredmenyek.com/csapat/siofok/YFzGWgOR/results/",
 } as const;
 
 export const SOCIAL = {
-  facebook: "https://www.facebook.com/balatonfuredifc",
-  instagram: "https://www.instagram.com/balatonfuredifc",
-  youtube: "https://www.youtube.com/@balatonfuredifc",
+  facebook: "https://www.facebook.com/bfcsiofok",
+  instagram: "",
+  youtube: "",
 } as const;
 
 export const REVALIDATE_SECONDS = 300;

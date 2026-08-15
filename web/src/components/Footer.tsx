@@ -1,15 +1,48 @@
 import Link from "next/link";
 import { CLUB, EREDMENYEK, SOCIAL } from "@/lib/constants";
+import type { Sponsor } from "@/lib/sanity/client";
 
-export default function Footer() {
+interface FooterProps {
+  sponsors: Sponsor[];
+}
+
+export default function Footer({ sponsors }: FooterProps) {
   return (
     <footer className="border-t border-white/10 bg-bfc-black text-white">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-3">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-4">
         <div>
           <p className="font-display text-2xl font-bold uppercase text-bfc-red">
             {CLUB.shortName}
           </p>
           <p className="mt-2 text-sm text-white/70">{CLUB.tagline}</p>
+        </div>
+
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.15em] text-white/60">
+            Oldal
+          </p>
+          <ul className="mt-4 space-y-2 text-sm">
+            <li>
+              <a href="#meccsek" className="text-white/80 hover:text-bfc-red">
+                Meccsek
+              </a>
+            </li>
+            <li>
+              <a href="#jatekosok" className="text-white/80 hover:text-bfc-red">
+                Játékosok
+              </a>
+            </li>
+            <li>
+              <a href="#tortenelem" className="text-white/80 hover:text-bfc-red">
+                Klub történelem
+              </a>
+            </li>
+            <li>
+              <a href="#sponzorok" className="text-white/80 hover:text-bfc-red">
+                Sponzorok
+              </a>
+            </li>
+          </ul>
         </div>
 
         <div>
@@ -24,7 +57,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="text-white/80 hover:text-bfc-red"
               >
-                Csapat oldal – Eredmenyek.com
+                Eredmenyek.com – csapat
               </a>
             </li>
             <li>
@@ -81,6 +114,59 @@ export default function Footer() {
               </a>
             </li>
           </ul>
+        </div>
+      </div>
+
+      <div id="sponzorok" className="border-t border-white/10">
+        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <p className="text-center text-sm font-semibold uppercase tracking-[0.15em] text-white/60">
+            Sponzorok
+          </p>
+
+          {sponsors.length === 0 ? (
+            <p className="mt-6 text-center text-sm text-white/50">
+              A sponzorok a Sanity CMS-ben adhatók hozzá (név és logó).
+            </p>
+          ) : (
+            <ul className="mt-8 flex flex-wrap items-center justify-center gap-8">
+              {sponsors.map((sponsor) => {
+                const content = (
+                  <>
+                    {sponsor.logoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={sponsor.logoUrl}
+                        alt={sponsor.name}
+                        className="max-h-16 max-w-[160px] object-contain opacity-90 transition hover:opacity-100"
+                      />
+                    ) : (
+                      <span className="text-sm font-medium text-white/80">
+                        {sponsor.name}
+                      </span>
+                    )}
+                  </>
+                );
+
+                return (
+                  <li key={sponsor._id}>
+                    {sponsor.url ? (
+                      <a
+                        href={sponsor.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={sponsor.name}
+                        className="block"
+                      >
+                        {content}
+                      </a>
+                    ) : (
+                      <div title={sponsor.name}>{content}</div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       </div>
 

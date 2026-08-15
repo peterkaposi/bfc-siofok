@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { CLUB, EREDMENYEK, SOCIAL } from "@/lib/constants";
+import { CLUB, SOCIAL } from "@/lib/constants";
 
 const LOGO_CANDIDATES = ["/logo.png", "/logo.svg", "/logo.jpg", "/logo.webp"];
 
@@ -43,6 +43,8 @@ function LogoMark() {
 const navItems = [
   { href: "#meccsek", label: "Meccsek" },
   { href: "#tabella", label: "Tabella" },
+  { href: "#jatekosok", label: "Játékosok" },
+  { href: "#tortenelem", label: "Klub történelem" },
   { href: "#hirek", label: "Hírek" },
   { href: "#esemenyek", label: "Események" },
 ];
@@ -71,14 +73,6 @@ export default function Header() {
               {item.label}
             </a>
           ))}
-          <a
-            href={EREDMENYEK.teamUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full bg-bfc-red px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
-          >
-            Eredmenyek.com
-          </a>
         </nav>
 
         <div className="flex items-center gap-2 md:hidden">

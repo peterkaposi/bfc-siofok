@@ -1,7 +1,15 @@
 import { EREDMENYEK } from "@/lib/constants";
 import type { Match, MatchStatus, TeamData, TeamSummary } from "./types";
 
-const FEED_KEYS = ["fixtures", "results", "summary", "squad", "transfers"];
+const FEED_KEYS = [
+  "fixtures",
+  "results",
+  "summary",
+  "summary-fixtures",
+  "summary-results",
+  "squad",
+  "transfers",
+];
 
 function extractFeedBlocks(html: string): string[] {
   const blocks: string[] = [];
@@ -75,8 +83,8 @@ function recordToMatch(
 ): Match | null {
   const id = fields.AA;
   const date = timestampToIso(fields.AD);
-  const homeTeamId = fields.AG ?? fields.AH;
-  const awayTeamId = fields.AI ?? fields.AJ ?? fields.AK;
+  const homeTeamId = fields.PX;
+  const awayTeamId = fields.PY;
 
   if (!id || !date || !homeTeamId || !awayTeamId) {
     return null;
@@ -84,14 +92,14 @@ function recordToMatch(
 
   const homeTeam = {
     id: homeTeamId,
-    name: fields.AF ?? fields.CX ?? "Ismeretlen",
+    name: fields.FH ?? fields.AE ?? fields.CX ?? "Ismeretlen",
     slug: fields.WU,
   };
 
   const awayTeam = {
     id: awayTeamId,
-    name: fields.AH ?? fields.CY ?? "Ismeretlen",
-    slug: fields.WW,
+    name: fields.FK ?? fields.AF ?? "Ismeretlen",
+    slug: fields.WV,
   };
 
   return {
@@ -101,9 +109,9 @@ function recordToMatch(
     awayTeam,
     homeScore: parseScore(fields.AT),
     awayScore: parseScore(fields.AU),
-    status: mapStatus(fields.AB ?? fields.AC ?? fields.AW),
-    competition: fields.ZA ?? fields.ZY,
-    round: fields.AE,
+    status: mapStatus(fields.AB ?? fields.AC),
+    competition: fields.ZA,
+    round: fields.ER,
     isHome: homeTeamId === teamId,
   };
 }
@@ -111,17 +119,28 @@ function recordToMatch(
 function parseFeedBlock(block: string, teamId: string): Match[] {
   const matches: Match[] = [];
   const seen = new Set<string>();
+  let competition: string | undefined;
 
   for (const record of block.split("~")) {
     const fields = parseFeedRecord(record);
+
+    if (fields.ZA && !fields.AA) {
+      competition = fields.ZA;
+      continue;
+    }
+
     if (!fields.AA) continue;
 
-    const homeId = fields.AG;
-    const awayId = fields.AI ?? fields.AJ ?? fields.AK;
+    const homeId = fields.PX;
+    const awayId = fields.PY;
     if (homeId !== teamId && awayId !== teamId) continue;
 
     const parsed = recordToMatch(fields, teamId);
     if (!parsed || seen.has(parsed.id)) continue;
+
+    if (!parsed.competition && competition) {
+      parsed.competition = competition;
+    }
 
     seen.add(parsed.id);
     matches.push(parsed);
