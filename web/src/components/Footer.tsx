@@ -105,12 +105,14 @@ export default function Footer({ sponsors }: FooterProps) {
                 const content = (
                   <>
                     {sponsor.logoUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={sponsor.logoUrl}
-                        alt={sponsor.name}
-                        className="max-h-16 max-w-[160px] object-contain opacity-90 transition hover:opacity-100"
-                      />
+                      <div className="flex h-24 min-w-[140px] items-center justify-center rounded-xl bg-white/5 px-4 py-3">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={sponsor.logoUrl}
+                          alt={sponsor.name}
+                          className="max-h-16 max-w-[200px] object-contain opacity-90 transition hover:opacity-100"
+                        />
+                      </div>
                     ) : (
                       <span className="text-sm font-medium text-white/80">
                         {sponsor.name}

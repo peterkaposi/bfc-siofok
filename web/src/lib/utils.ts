@@ -3,6 +3,12 @@ import type { Match } from "@/lib/flashscore/types";
 
 const TIMEZONE = "Europe/Budapest";
 
+export function getTodayDateStringBudapest(): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: TIMEZONE,
+  }).format(new Date());
+}
+
 const dateFormatter = new Intl.DateTimeFormat("hu-HU", {
   year: "numeric",
   month: "long",

@@ -24,8 +24,7 @@ export default function EventsSection({ events }: EventsSectionProps) {
               Jelenleg nincs közelgő esemény.
             </p>
             <p className="mt-2 text-sm">
-              Az események a Sanity CMS-ben adhatók hozzá, amint a projekt
-              konfigurálva van.
+              Az események a Sanity CMS-ben adhatók hozzá (Esemény → Publish).
             </p>
           </div>
         ) : (

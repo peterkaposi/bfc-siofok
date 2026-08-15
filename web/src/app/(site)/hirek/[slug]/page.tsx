@@ -62,12 +62,14 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
         )}
 
         {article.imageUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={article.imageUrl}
-            alt={article.title}
-            className="mt-8 w-full rounded-2xl object-cover"
-          />
+          <div className="mt-8 flex items-center justify-center rounded-2xl bg-zinc-100 p-6">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={article.imageUrl}
+              alt={article.title}
+              className="max-h-[28rem] w-full object-contain"
+            />
+          </div>
         )}
 
         {article.body?.length ? (

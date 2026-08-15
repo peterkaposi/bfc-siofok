@@ -26,7 +26,7 @@ export const NEWS_ARTICLE_BY_SLUG_QUERY = defineQuery(`
 `);
 
 export const UPCOMING_EVENTS_QUERY = defineQuery(`
-  *[_type == "event" && date >= $now] | order(date asc)[0...$limit]{
+  *[_type == "event" && string::split(date, "T")[0] >= $today] | order(date asc)[0...$limit]{
     _id,
     title,
     date,

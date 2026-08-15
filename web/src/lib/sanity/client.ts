@@ -9,6 +9,7 @@ import {
   SPONSORS_QUERY,
   UPCOMING_EVENTS_QUERY,
 } from "@/sanity/queries";
+import { getTodayDateStringBudapest } from "@/lib/utils";
 
 export interface NewsArticle {
   _id: string;
@@ -67,14 +68,28 @@ export interface PortableTextBlock {
 
 const builder = createImageUrlBuilder(client);
 
-function buildImageUrl(source: SanityImageSource | undefined): string | undefined {
+function buildCardImageUrl(
+  source: SanityImageSource | undefined,
+): string | undefined {
   if (!source) return undefined;
-  return builder.image(source).width(800).height(450).fit("crop").url();
+  return builder.image(source).width(800).fit("max").auto("format").url();
 }
 
 function buildLogoUrl(source: SanityImageSource | undefined): string | undefined {
   if (!source) return undefined;
-  return builder.image(source).width(240).height(120).fit("max").url();
+  return builder.image(source).width(320).fit("max").auto("format").url();
+}
+
+function buildHeroImageUrl(
+  source: SanityImageSource | undefined,
+): string | undefined {
+  if (!source) return undefined;
+  return builder.image(source).width(1200).fit("max").auto("format").url();
+}
+
+function buildPhotoUrl(source: SanityImageSource | undefined): string | undefined {
+  if (!source) return undefined;
+  return builder.image(source).width(600).height(700).fit("max").auto("format").url();
 }
 
 export const PLACEHOLDER_NEWS: NewsArticle[] = [
@@ -96,13 +111,6 @@ export const PLACEHOLDER_NEWS: NewsArticle[] = [
     publishedAt: new Date(Date.now() - 86400000).toISOString(),
   },
 ];
-
-function buildHeroImageUrl(
-  source: SanityImageSource | undefined,
-): string | undefined {
-  if (!source) return undefined;
-  return builder.image(source).width(1200).height(675).fit("crop").url();
-}
 
 export async function getNewsArticles(limit = 6): Promise<NewsArticle[]> {
   if (!isSanityConfigured) return PLACEHOLDER_NEWS.slice(0, limit);
@@ -129,7 +137,7 @@ export async function getNewsArticles(limit = 6): Promise<NewsArticle[]> {
       excerpt: article.excerpt,
       category: article.category,
       publishedAt: article.publishedAt,
-      imageUrl: buildImageUrl(article.mainImage),
+      imageUrl: buildCardImageUrl(article.mainImage),
     }));
   } catch {
     return PLACEHOLDER_NEWS.slice(0, limit);
@@ -176,7 +184,7 @@ export async function getUpcomingEvents(limit = 4): Promise<ClubEvent[]> {
   try {
     return await client.fetch<ClubEvent[]>(
       UPCOMING_EVENTS_QUERY,
-      { now: new Date().toISOString(), limit },
+      { today: getTodayDateStringBudapest(), limit },
       { next: { revalidate: 60 } },
     );
   } catch {
@@ -203,7 +211,7 @@ export async function getPlayers(): Promise<Player[]> {
       name: player.name,
       position: player.position,
       number: player.number,
-      photoUrl: buildImageUrl(player.photo),
+      photoUrl: buildPhotoUrl(player.photo),
     }));
   } catch {
     return [];

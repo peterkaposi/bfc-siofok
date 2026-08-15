@@ -30,12 +30,14 @@ export default function NewsSection({ articles }: NewsSectionProps) {
               className="group overflow-hidden rounded-2xl border border-black/10 bg-zinc-50 shadow-sm transition hover:-translate-y-0.5 hover:border-bfc-red/30 hover:shadow-md"
             >
               {article.imageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={article.imageUrl}
-                  alt={article.title}
-                  className="h-44 w-full object-cover transition group-hover:scale-[1.02]"
-                />
+                <div className="flex h-48 items-center justify-center bg-zinc-100 p-6">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={article.imageUrl}
+                    alt={article.title}
+                    className="max-h-full max-w-full object-contain transition group-hover:scale-[1.02]"
+                  />
+                </div>
               ) : (
                 <div className="flex h-44 items-end bg-bfc-black p-4">
                   <span className="font-display text-2xl font-bold uppercase text-bfc-red">
