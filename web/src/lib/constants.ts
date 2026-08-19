@@ -3,6 +3,7 @@ export const CLUB = {
   shortName: "BFC Siófok",
   slug: "bfc-siofok",
   tagline: "Labdarúgás szenvedély a Balaton partján",
+  headerSubtitle: "Felnőtt labdarúgó csapat hivatalos oldala",
   city: "Siófok",
   founded: 1921,
   stadium: "Révész Géza utcai stadion",
@@ -45,3 +46,8 @@ export const NAV_ITEMS = [
   { href: "#hirek", label: "Hírek" },
   { href: "#esemenyek", label: "Események" },
 ] as const;
+
+export const SHOP_LINK = {
+  href: "/shop",
+  label: "Webshop",
+} as const;

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CLUB, NAV_ITEMS } from "@/lib/constants";
+import { CLUB, NAV_ITEMS, SHOP_LINK } from "@/lib/constants";
 
 const LOGO_CANDIDATES = ["/logo.png", "/logo.svg", "/logo.jpg", "/logo.webp"];
 
@@ -185,26 +185,38 @@ export default function Header() {
               <p className="truncate font-display text-lg font-bold uppercase tracking-wide text-white">
                 {CLUB.name}
               </p>
-              <p className="truncate text-xs text-white/70">{CLUB.city}</p>
+              <p className="line-clamp-2 max-w-[11rem] text-[10px] leading-snug text-white/70 sm:max-w-[16rem] sm:text-xs">
+                {CLUB.headerSubtitle}
+              </p>
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-6 md:flex">
-            {NAV_ITEMS.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="text-sm font-medium text-white/80 transition hover:text-bfc-red"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            <nav className="hidden items-center gap-6 md:flex">
+              {NAV_ITEMS.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="text-sm font-medium text-white/80 transition hover:text-bfc-red"
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
 
-          <MenuToggle
-            isOpen={isMenuOpen}
-            onClick={() => setIsMenuOpen((open) => !open)}
-          />
+            <Link
+              href={SHOP_LINK.href}
+              onClick={closeMenu}
+              className="inline-flex shrink-0 items-center justify-center rounded-full bg-bfc-red px-3.5 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-red-700 sm:px-4 sm:text-sm"
+            >
+              {SHOP_LINK.label}
+            </Link>
+
+            <MenuToggle
+              isOpen={isMenuOpen}
+              onClick={() => setIsMenuOpen((open) => !open)}
+            />
+          </div>
         </div>
       </header>
 

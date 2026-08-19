@@ -5,9 +5,13 @@
     "dev": "npm run dev --prefix web",
     "dev:web": "npm run dev --prefix web",
     "dev:studio": "npm run dev --prefix studio",
+    "dev:commerce": "npm run backend:dev --prefix commerce",
     "build": "npm run build --prefix web",
     "build:web": "npm run build --prefix web",
     "build:studio": "npm run build --prefix studio",
+    "commerce:setup": "npm run commerce:migrate --prefix commerce && npm run commerce:seed --prefix commerce",
+    "commerce:migrate": "npm run db:migrate --prefix commerce/apps/backend",
+    "commerce:seed": "npm run backend:seed --prefix commerce",
     "lint": "npm run lint --prefix web"
   }
 }
