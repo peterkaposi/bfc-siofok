@@ -1,104 +1,25 @@
-import { CLUB, EREDMENYEK } from "@/lib/constants";
+import { EREDMENYEK } from "@/lib/constants";
 import type { Match } from "@/lib/flashscore/types";
-import {
-  formatMatchDate,
-  formatMatchGoalLabel,
-  formatMatchTeams,
-  formatUpcomingMatchDate,
-} from "@/lib/utils";
-import LiveMatchClock from "./LiveMatchClock";
+import { isWithinLastYear } from "@/lib/utils";
+import MatchListAccordion from "./MatchListAccordion";
+import MatchRow from "./MatchRow";
 
 interface MatchCenterProps {
   matches: Match[];
   liveMatches: Match[];
 }
 
-function teamDisplayName(match: Match, side: "home" | "away"): string {
-  const team = side === "home" ? match.homeTeam : match.awayTeam;
-  return team.id === EREDMENYEK.teamId ? CLUB.name : team.name;
-}
-
-function MatchGoals({ match }: { match: Match }) {
-  if (!match.goals?.length) return null;
-
-  return (
-    <ul className="mt-2 space-y-1 text-sm text-black/70">
-      {match.goals.map((goal, index) => (
-        <li key={`${goal.minute}-${goal.playerName}-${index}`}>
-          ⚽ {formatMatchGoalLabel(goal)} (
-          {teamDisplayName(match, goal.teamSide)})
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function MatchRow({ match }: { match: Match }) {
-  return (
-    <article className="min-w-0 grid gap-3 rounded-2xl border border-black/10 bg-white p-4 shadow-sm sm:grid-cols-[1fr_auto_auto] sm:items-center">
-      <div className="min-w-0">
-        <p className="break-words text-xs uppercase tracking-[0.15em] text-black/50 [overflow-wrap:anywhere]">
-          {match.competition ?? "Bajnokság"}
-          {match.round ? ` · ${match.round}. forduló` : ""}
-        </p>
-        <p className="mt-1 font-display text-xl font-bold text-bfc-black">
-          {formatMatchTeams(match)}
-        </p>
-        <p className="mt-1 text-sm text-black/60">
-          {match.status === "live" ? (
-            <LiveMatchClock match={match} variant="meta" />
-          ) : match.status === "scheduled" ? (
-            `${formatUpcomingMatchDate(match.date)} · ${match.isHome ? "Hazai pálya" : "Idegenbeli"}`
-          ) : (
-            `${formatMatchDate(match.date)} · ${match.isHome ? "Hazai pálya" : "Idegenbeli"}`
-          )}
-        </p>
-        <MatchGoals match={match} />
-      </div>
-
-      <span
-        className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold uppercase ${
-          match.status === "live"
-            ? "bg-bfc-red text-white"
-            : match.status === "finished"
-              ? "bg-black/10 text-black/70"
-              : "bg-bfc-red/10 text-bfc-red"
-        }`}
-      >
-        {match.status === "live" ? (
-          <LiveMatchClock match={match} variant="badge" />
-        ) : match.status === "finished" ? (
-          "Lezárult"
-        ) : match.status === "postponed" ? (
-          "Elhalasztva"
-        ) : (
-          "Következő"
-        )}
-      </span>
-
-      <a
-        href={`${EREDMENYEK.baseUrl}/merkozes/foci/${match.id}/`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex shrink-0 items-center justify-center rounded-full bg-bfc-red px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
-      >
-        Részletek
-      </a>
-    </article>
-  );
-}
-
 export default function MatchCenter({ matches, liveMatches }: MatchCenterProps) {
-  const upcoming = matches
-    .filter(
-      (match) =>
-        match.status === "scheduled" || match.status === "postponed",
-    )
-    .slice(0, 5);
+  const upcoming = matches.filter(
+    (match) => match.status === "scheduled" || match.status === "postponed",
+  );
 
   const recent = matches
-    .filter((match) => match.status === "finished")
-    .slice(-5)
+    .filter(
+      (match) =>
+        match.status === "finished" && isWithinLastYear(match.date),
+    )
+    .slice()
     .reverse();
 
   return (
@@ -136,38 +57,28 @@ export default function MatchCenter({ matches, liveMatches }: MatchCenterProps) 
           </div>
         )}
 
-        <div className="mt-10 grid gap-10 lg:grid-cols-2">
-          <div>
+        <div className="mt-10 grid items-stretch gap-10 lg:grid-cols-2">
+          <div className="flex flex-col">
             <h3 className="mb-4 font-display text-xl font-bold uppercase text-bfc-black">
               Következő meccsek
             </h3>
-            <div className="grid gap-4">
-              {upcoming.length > 0 ? (
-                upcoming.map((match) => (
-                  <MatchRow key={match.id} match={match} />
-                ))
-              ) : (
-                <p className="rounded-2xl border border-dashed border-black/15 p-6 text-black/60">
-                  Jelenleg nincs közelgő meccs az adatforrásban.
-                </p>
-              )}
+            <div className="flex flex-1 flex-col">
+              <MatchListAccordion
+                matches={upcoming}
+                emptyMessage="Jelenleg nincs közelgő meccs az adatforrásban."
+              />
             </div>
           </div>
 
-          <div>
+          <div className="flex flex-col">
             <h3 className="mb-4 font-display text-xl font-bold uppercase text-bfc-black">
               Legutóbbi eredmények
             </h3>
-            <div className="grid gap-4">
-              {recent.length > 0 ? (
-                recent.map((match) => (
-                  <MatchRow key={match.id} match={match} />
-                ))
-              ) : (
-                <p className="rounded-2xl border border-dashed border-black/15 p-6 text-black/60">
-                  Még nincs lejátszott meccs adat.
-                </p>
-              )}
+            <div className="flex flex-1 flex-col">
+              <MatchListAccordion
+                matches={recent}
+                emptyMessage="Még nincs lejátszott meccs adat."
+              />
             </div>
           </div>
         </div>

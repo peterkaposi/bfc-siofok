@@ -41,10 +41,10 @@ export const FLASHSCORE_FEED_SIGN = "SW9D1eZo";
 export const NAV_ITEMS = [
   { href: "#meccsek", label: "Meccsek" },
   { href: "#tabella", label: "Tabella" },
+  { href: "#hirek", label: "Hírek, események" },
   { href: "#jatekosok", label: "Játékosok" },
+  { href: "#klubvezetes", label: "Klubvezetés" },
   { href: "#tortenelem", label: "Klub történelem" },
-  { href: "#hirek", label: "Hírek" },
-  { href: "#esemenyek", label: "Események" },
 ] as const;
 
 export const SHOP_LINK = {

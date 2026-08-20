@@ -3,14 +3,12 @@ import { createImageUrlBuilder, type SanityImageSource } from "@sanity/image-url
 import { client, isSanityConfigured } from "@/sanity/client";
 import {
   CLUB_HISTORY_QUERY,
-  EVENT_BY_SLUG_QUERY,
+  CLUB_LEADERS_QUERY,
   NEWS_ARTICLE_BY_SLUG_QUERY,
   NEWS_ARTICLES_QUERY,
   PLAYERS_QUERY,
   SPONSORS_QUERY,
-  UPCOMING_EVENTS_QUERY,
 } from "@/sanity/queries";
-import { getTodayDateStringBudapest } from "@/lib/utils";
 
 export interface NewsArticle {
   _id: string;
@@ -23,20 +21,7 @@ export interface NewsArticle {
 }
 
 export interface NewsArticleDetail extends NewsArticle {
-  body?: PortableTextBlock[];
-}
-
-export interface ClubEvent {
-  _id: string;
-  title: string;
-  slug?: string;
-  date: string;
-  location?: string;
-  description?: string;
-}
-
-export function getEventPath(event: Pick<ClubEvent, "_id" | "slug">): string {
-  return `/esemenyek/${event.slug ?? event._id}`;
+  body?: ArticleContentBlock[];
 }
 
 export interface Player {
@@ -44,6 +29,13 @@ export interface Player {
   name: string;
   position?: string;
   number?: number;
+  photoUrl?: string;
+}
+
+export interface ClubLeader {
+  _id: string;
+  name: string;
+  title: string;
   photoUrl?: string;
 }
 
@@ -71,6 +63,13 @@ export interface PortableTextBlock {
   style?: string;
   children?: PortableTextSpan[];
 }
+
+export interface YoutubeBlock {
+  _type: "youtube";
+  url: string;
+}
+
+export type ArticleContentBlock = PortableTextBlock | YoutubeBlock;
 
 const builder = createImageUrlBuilder(client);
 
@@ -184,62 +183,6 @@ export async function getNewsArticleBySlug(
   }
 }
 
-export async function getUpcomingEvents(limit = 4): Promise<ClubEvent[]> {
-  if (!isSanityConfigured) return [];
-
-  try {
-    const events = await client.fetch<
-      Array<{
-        _id: string;
-        title: string;
-        slug?: { current: string };
-        date: string;
-        location?: string;
-        description?: string;
-      }>
-    >(UPCOMING_EVENTS_QUERY, { today: getTodayDateStringBudapest(), limit }, { next: { revalidate: 60 } });
-
-    return events.map((event) => ({
-      _id: event._id,
-      title: event.title,
-      slug: event.slug?.current,
-      date: event.date,
-      location: event.location,
-      description: event.description,
-    }));
-  } catch {
-    return [];
-  }
-}
-
-export async function getEventBySlug(slug: string): Promise<ClubEvent | null> {
-  if (!isSanityConfigured) return null;
-
-  try {
-    const event = await client.fetch<{
-      _id: string;
-      title: string;
-      slug?: { current: string };
-      date: string;
-      location?: string;
-      description?: string;
-    } | null>(EVENT_BY_SLUG_QUERY, { slug }, { next: { revalidate: 60 } });
-
-    if (!event) return null;
-
-    return {
-      _id: event._id,
-      title: event.title,
-      slug: event.slug?.current,
-      date: event.date,
-      location: event.location,
-      description: event.description,
-    };
-  } catch {
-    return null;
-  }
-}
-
 export async function getPlayers(): Promise<Player[]> {
   if (!isSanityConfigured) return [];
 
@@ -260,6 +203,30 @@ export async function getPlayers(): Promise<Player[]> {
       position: player.position,
       number: player.number,
       photoUrl: buildPhotoUrl(player.photo),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function getClubLeaders(): Promise<ClubLeader[]> {
+  if (!isSanityConfigured) return [];
+
+  try {
+    const leaders = await client.fetch<
+      Array<{
+        _id: string;
+        name: string;
+        title: string;
+        photo?: SanityImageSource;
+      }>
+    >(CLUB_LEADERS_QUERY, {}, { next: { revalidate: 60 } });
+
+    return leaders.map((leader) => ({
+      _id: leader._id,
+      name: leader.name,
+      title: leader.title,
+      photoUrl: buildPhotoUrl(leader.photo),
     }));
   } catch {
     return [];

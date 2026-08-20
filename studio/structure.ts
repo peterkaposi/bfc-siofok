@@ -13,7 +13,8 @@ export const structure: StructureResolver = (S) =>
             .documentId("clubHistory"),
         ),
       S.divider(),
-      ...S.documentTypeListItems().filter(
-        (item) => item.getId() !== "clubHistory",
-      ),
+      S.documentTypeListItem("newsArticle").title("Hírek, események"),
+      S.documentTypeListItem("player").title("Játékosok"),
+      S.documentTypeListItem("clubLeader").title("Klubvezetés"),
+      S.documentTypeListItem("sponsor").title("Szponzorok"),
     ]);

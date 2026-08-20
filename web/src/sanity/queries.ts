@@ -25,34 +25,21 @@ export const NEWS_ARTICLE_BY_SLUG_QUERY = defineQuery(`
   }
 `);
 
-export const UPCOMING_EVENTS_QUERY = defineQuery(`
-  *[_type == "event" && string::split(date, "T")[0] >= $today] | order(date asc)[0...$limit]{
-    _id,
-    title,
-    slug,
-    date,
-    location,
-    description
-  }
-`);
-
-export const EVENT_BY_SLUG_QUERY = defineQuery(`
-  *[_type == "event" && (slug.current == $slug || _id == $slug)][0]{
-    _id,
-    title,
-    slug,
-    date,
-    location,
-    description
-  }
-`);
-
 export const PLAYERS_QUERY = defineQuery(`
   *[_type == "player"] | order(order asc, name asc){
     _id,
     name,
     position,
     number,
+    photo
+  }
+`);
+
+export const CLUB_LEADERS_QUERY = defineQuery(`
+  *[_type == "clubLeader"] | order(order asc, name asc){
+    _id,
+    name,
+    title,
     photo
   }
 `);

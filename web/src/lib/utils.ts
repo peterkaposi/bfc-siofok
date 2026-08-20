@@ -3,12 +3,6 @@ import type { Match, MatchGoal } from "@/lib/flashscore/types";
 
 const TIMEZONE = "Europe/Budapest";
 
-export function getTodayDateStringBudapest(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: TIMEZONE,
-  }).format(new Date());
-}
-
 const dateFormatter = new Intl.DateTimeFormat("hu-HU", {
   year: "numeric",
   month: "long",
@@ -19,16 +13,6 @@ const dateFormatter = new Intl.DateTimeFormat("hu-HU", {
 });
 
 const timeFormatter = new Intl.DateTimeFormat("hu-HU", {
-  hour: "2-digit",
-  minute: "2-digit",
-  timeZone: TIMEZONE,
-});
-
-const eventDateFormatter = new Intl.DateTimeFormat("hu-HU", {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric",
   hour: "2-digit",
   minute: "2-digit",
   timeZone: TIMEZONE,
@@ -63,6 +47,13 @@ export function formatMatchDate(date: string): string {
   return dateFormatter.format(new Date(date));
 }
 
+export function isWithinLastYear(date: string): boolean {
+  const target = new Date(date);
+  const cutoff = new Date();
+  cutoff.setFullYear(cutoff.getFullYear() - 1);
+  return target >= cutoff;
+}
+
 export function formatRelativeDate(date: string): string {
   const target = new Date(date);
   const now = new Date();
@@ -91,32 +82,9 @@ export function formatRelativeDate(date: string): string {
   return formatMatchDate(date);
 }
 
-/** Upcoming match: full date, with relative hint in parentheses when close. */
+/** Upcoming match: full date and time only. */
 export function formatUpcomingMatchDate(date: string): string {
-  const target = new Date(date);
-  const now = new Date();
-  const diffDays = dayDiff(target, now);
-  const formatted = formatMatchDate(date);
-
-  if (diffDays < 0) return formatted;
-
-  if (isSameDay(target, now)) {
-    return `${formatted} (ma)`;
-  }
-
-  if (diffDays === 1) {
-    return `${formatted} (holnap)`;
-  }
-
-  if (diffDays <= 7) {
-    return `${formatted} (${diffDays} nap múlva)`;
-  }
-
-  return formatted;
-}
-
-export function formatEventDate(date: string): string {
-  return eventDateFormatter.format(new Date(date));
+  return formatMatchDate(date);
 }
 
 export function getMatchScoreLabel(match: Match): string {

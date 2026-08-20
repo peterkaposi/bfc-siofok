@@ -1,6 +1,6 @@
 import ClubHistorySection from "@/components/ClubHistorySection";
-import EventsSection from "@/components/EventsSection";
 import Hero from "@/components/Hero";
+import LeadershipSection from "@/components/LeadershipSection";
 import MatchCenter from "@/components/MatchCenter";
 import NewsSection from "@/components/NewsSection";
 import PlayersSection from "@/components/PlayersSection";
@@ -9,9 +9,9 @@ import { getTeamData, reconcileTeamData, refreshTeamData } from "@/lib/flashscor
 import { hasMatchInLiveWindow, shouldPollLiveMatches, summarizeTeamData } from "@/lib/flashscore/parser";
 import {
   getClubHistory,
+  getClubLeaders,
   getNewsArticles,
   getPlayers,
-  getUpcomingEvents,
 } from "@/lib/sanity/client";
 import LiveMatchAutoRefresh from "@/components/LiveMatchAutoRefresh";
 
@@ -37,10 +37,10 @@ export default async function HomePage() {
   const liveMatches = summary.liveMatches;
   const liveMatch = liveMatches[0];
 
-  const [articles, events, players, history] = await Promise.all([
+  const [articles, players, leaders, history] = await Promise.all([
     getNewsArticles(),
-    getUpcomingEvents(),
     getPlayers(),
+    getClubLeaders(),
     getClubHistory(),
   ]);
 
@@ -57,10 +57,10 @@ export default async function HomePage() {
         liveMatches={liveMatches}
       />
       <StandingsSection stats={summary.stats} />
-      <PlayersSection players={players} />
-      <ClubHistorySection history={history} />
       <NewsSection articles={articles} />
-      <EventsSection events={events} />
+      <PlayersSection players={players} />
+      <LeadershipSection leaders={leaders} />
+      <ClubHistorySection history={history} />
     </>
   );
 }

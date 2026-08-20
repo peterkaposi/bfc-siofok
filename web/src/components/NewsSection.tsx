@@ -14,10 +14,10 @@ export default function NewsSection({ articles }: NewsSectionProps) {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-bfc-red">
-              Hírek
+              Hírek, események
             </p>
             <h2 className="mt-2 font-display text-3xl font-bold uppercase text-bfc-black">
-              Klubhírek
+              Klubhírek és események
             </h2>
           </div>
         </div>

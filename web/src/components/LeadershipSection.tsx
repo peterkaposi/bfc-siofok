@@ -1,10 +1,10 @@
-import type { Player } from "@/lib/sanity/client";
+import type { ClubLeader } from "@/lib/sanity/client";
 
-interface PlayersSectionProps {
-  players: Player[];
+interface LeadershipSectionProps {
+  leaders: ClubLeader[];
 }
 
-function PlayerAvatar() {
+function LeaderAvatar() {
   return (
     <div className="flex aspect-[3/2] items-center justify-center bg-zinc-200">
       <svg
@@ -19,80 +19,71 @@ function PlayerAvatar() {
   );
 }
 
-function PlayerCard({ player }: { player: Player }) {
+function LeaderCard({ leader }: { leader: ClubLeader }) {
   return (
     <article className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
-      {player.photoUrl ? (
+      {leader.photoUrl ? (
         <div className="flex aspect-[3/2] items-center justify-center bg-zinc-100 p-2 sm:p-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={player.photoUrl}
-            alt={player.name}
+            src={leader.photoUrl}
+            alt={leader.name}
             className="max-h-full max-w-full object-contain"
           />
         </div>
       ) : (
-        <PlayerAvatar />
+        <LeaderAvatar />
       )}
 
       <div className="p-3">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display text-base font-bold leading-tight text-bfc-black">
-            {player.name}
-          </h3>
-          {player.number !== undefined && (
-            <span className="rounded-full bg-bfc-red px-2 py-0.5 text-xs font-bold text-white">
-              {player.number}
-            </span>
-          )}
-        </div>
-        {player.position && (
-          <p className="mt-0.5 text-xs text-black/60">{player.position}</p>
-        )}
+        <h3 className="font-display text-base font-bold leading-tight text-bfc-black">
+          {leader.name}
+        </h3>
+        <p className="mt-0.5 text-xs text-black/60">{leader.title}</p>
       </div>
     </article>
   );
 }
 
-export default function PlayersSection({ players }: PlayersSectionProps) {
+export default function LeadershipSection({ leaders }: LeadershipSectionProps) {
   return (
-    <section id="jatekosok" className="w-full max-w-full bg-zinc-50 py-16">
+    <section id="klubvezetes" className="w-full max-w-full bg-white py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-bfc-red">
-            Keret
+            Vezetőség
           </p>
           <h2 className="mt-2 font-display text-3xl font-bold uppercase text-bfc-black">
-            Játékosok
+            Klubvezetés
           </h2>
         </div>
 
-        {players.length === 0 ? (
-          <div className="mt-10 rounded-2xl border border-dashed border-black/15 bg-white p-8 text-black/60">
+        {leaders.length === 0 ? (
+          <div className="mt-10 rounded-2xl border border-dashed border-black/15 bg-zinc-50 p-8 text-black/60">
             <p className="font-medium text-bfc-black">
-              A játékoslista hamarosan érkezik.
+              A klubvezetés listája hamarosan érkezik.
             </p>
             <p className="mt-2 text-sm">
-              A játékosok a Sanity CMS-ben adhatók hozzá (név, fotó, pozíció,
-              mezszám).
+              A vezetőség tagjai a Sanity CMS-ben adhatók hozzá (név, titulus,
+              kép).
             </p>
           </div>
         ) : (
           <>
             <div className="players-carousel mt-10 -mx-4 flex gap-3 overflow-x-auto px-4 pb-2 md:hidden">
-              {players.map((player) => (
+              {leaders.map((leader) => (
                 <div
-                  key={player._id}
+                  key={leader._id}
                   className="w-[56vw] max-w-[240px] shrink-0 snap-center"
                 >
-                  <PlayerCard player={player} />
+                  <LeaderCard leader={leader} />
                 </div>
               ))}
             </div>
 
             <div className="mt-10 hidden gap-4 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {players.map((player) => (
-                <PlayerCard key={player._id} player={player} />
+              {leaders.map((leader) => (
+                <LeaderCard key={leader._id} leader={leader} />
               ))}
             </div>
           </>

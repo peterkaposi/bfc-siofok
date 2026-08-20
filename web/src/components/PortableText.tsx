@@ -1,14 +1,18 @@
-import type { PortableTextBlock } from "@/lib/sanity/client";
+import YouTubeEmbed from "@/components/YouTubeEmbed";
+import type { ArticleContentBlock } from "@/lib/sanity/client";
 
 interface PortableTextProps {
-  blocks: PortableTextBlock[];
+  blocks: ArticleContentBlock[];
   className?: string;
 }
 
 const textWrapClass = "break-words [overflow-wrap:anywhere]";
 
-function renderBlock(block: PortableTextBlock, index: number) {
-  if (block._type !== "block" || !block.children?.length) return null;
+function renderTextBlock(
+  block: Extract<ArticleContentBlock, { _type: "block" }>,
+  index: number,
+) {
+  if (!block.children?.length) return null;
 
   const text = block.children.map((child) => child.text).join("");
 
@@ -46,7 +50,17 @@ function renderBlock(block: PortableTextBlock, index: number) {
 export default function PortableText({ blocks, className }: PortableTextProps) {
   return (
     <div className={`${textWrapClass} ${className ?? ""}`}>
-      {blocks.map((block, index) => renderBlock(block, index))}
+      {blocks.map((block, index) => {
+        if (block._type === "youtube" && block.url) {
+          return <YouTubeEmbed key={index} url={block.url} />;
+        }
+
+        if (block._type === "block") {
+          return renderTextBlock(block, index);
+        }
+
+        return null;
+      })}
     </div>
   );
 }
