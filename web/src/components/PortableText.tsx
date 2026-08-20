@@ -1,3 +1,4 @@
+import UploadedVideo from "@/components/UploadedVideo";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import type { ArticleContentBlock } from "@/lib/sanity/client";
 
@@ -53,6 +54,17 @@ export default function PortableText({ blocks, className }: PortableTextProps) {
       {blocks.map((block, index) => {
         if (block._type === "youtube" && block.url) {
           return <YouTubeEmbed key={index} url={block.url} />;
+        }
+
+        if (block._type === "videoUpload" && block.videoUrl) {
+          return (
+            <UploadedVideo
+              key={index}
+              src={block.videoUrl}
+              mimeType={block.mimeType}
+              caption={block.caption}
+            />
+          );
         }
 
         if (block._type === "block") {

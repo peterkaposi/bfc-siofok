@@ -1,4 +1,4 @@
-import { CLUB, DEVELOPER, NAV_ITEMS, SOCIAL } from "@/lib/constants";
+import { CLUB, NAV_ITEMS, SOCIAL } from "@/lib/constants";
 import type { Sponsor } from "@/lib/sanity/client";
 
 interface FooterProps {
@@ -104,7 +104,10 @@ export default function Footer({ sponsors }: FooterProps) {
 
           {sponsors.length === 0 ? (
             <p className="mt-6 text-center text-sm text-white/50">
-              A Szponzorok a Sanity CMS-ben adhatók hozzá (név és logó).
+              A szponzorok a Sanity Studió „Szponzorok” menüpontjában adhatók
+              hozzá. Mentés után kattints a{" "}
+              <span className="font-semibold text-white/70">Publish</span> gombra
+              is — csak a publikált tartalom jelenik meg az oldalon.
             </p>
           ) : (
             <ul className="mt-8 flex flex-wrap items-center justify-center gap-8">
@@ -152,22 +155,11 @@ export default function Footer({ sponsors }: FooterProps) {
       </div>
 
       <div
-        className="border-t border-white/10 py-4 text-center text-xs text-white/50"
+        className="border-t border-white/10 py-5 text-center text-xs text-white/45"
         suppressHydrationWarning
       >
         <p>
           © {new Date().getFullYear()} {CLUB.name}. Minden jog fenntartva.
-        </p>
-        <p className="mt-1.5">
-          Weboldal fejlesztése:{" "}
-          <a
-            href={DEVELOPER.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/60 transition hover:text-bfc-red"
-          >
-            {DEVELOPER.name}
-          </a>
         </p>
       </div>
     </footer>

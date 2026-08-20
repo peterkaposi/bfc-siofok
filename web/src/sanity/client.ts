@@ -12,7 +12,4 @@ export const client = createClient({
   useCdn: true,
 });
 
-export const isSanityConfigured = Boolean(
-  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID &&
-    process.env.NEXT_PUBLIC_SANITY_DATASET,
-);
+export const isSanityConfigured = Boolean(projectId && dataset);

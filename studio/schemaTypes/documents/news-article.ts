@@ -53,7 +53,7 @@ export const newsArticle = defineType({
       name: "body",
       title: "Tartalom",
       type: "array",
-      of: [{ type: "block" }, { type: "youtube" }],
+      of: [{ type: "block" }, { type: "youtube" }, { type: "videoUpload" }],
     }),
     defineField({
       name: "publishedAt",

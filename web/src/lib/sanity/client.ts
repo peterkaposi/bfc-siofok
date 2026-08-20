@@ -70,7 +70,17 @@ export interface YoutubeBlock {
   url: string;
 }
 
-export type ArticleContentBlock = PortableTextBlock | YoutubeBlock;
+export interface VideoUploadBlock {
+  _type: "videoUpload";
+  videoUrl?: string;
+  mimeType?: string;
+  caption?: string;
+}
+
+export type ArticleContentBlock =
+  | PortableTextBlock
+  | YoutubeBlock
+  | VideoUploadBlock;
 
 const builder = createImageUrlBuilder(client);
 

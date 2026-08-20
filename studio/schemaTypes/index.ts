@@ -3,6 +3,7 @@ import { clubLeader } from "./documents/club-leader";
 import { newsArticle } from "./documents/news-article";
 import { player } from "./documents/player";
 import { sponsor } from "./documents/sponsor";
+import { videoUpload } from "./objects/video-upload";
 import { youtube } from "./objects/youtube";
 
 export const schemaTypes = [
@@ -12,4 +13,5 @@ export const schemaTypes = [
   clubHistory,
   sponsor,
   youtube,
+  videoUpload,
 ];

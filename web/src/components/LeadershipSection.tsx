@@ -1,4 +1,5 @@
 import type { ClubLeader } from "@/lib/sanity/client";
+import MobileCardCarousel from "./MobileCardCarousel";
 
 interface LeadershipSectionProps {
   leaders: ClubLeader[];
@@ -70,7 +71,8 @@ export default function LeadershipSection({ leaders }: LeadershipSectionProps) {
           </div>
         ) : (
           <>
-            <div className="players-carousel mt-10 -mx-4 flex gap-3 overflow-x-auto px-4 pb-2 md:hidden">
+            <div className="mt-10">
+            <MobileCardCarousel itemCount={leaders.length}>
               {leaders.map((leader) => (
                 <div
                   key={leader._id}
@@ -79,6 +81,7 @@ export default function LeadershipSection({ leaders }: LeadershipSectionProps) {
                   <LeaderCard leader={leader} />
                 </div>
               ))}
+            </MobileCardCarousel>
             </div>
 
             <div className="mt-10 hidden gap-4 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">

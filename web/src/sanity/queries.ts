@@ -22,7 +22,16 @@ export const NEWS_ARTICLE_BY_SLUG_QUERY = defineQuery(`
     category,
     publishedAt,
     mainImage,
-    body
+    body[]{
+      ...,
+      _type == "videoUpload" => {
+        _type,
+        _key,
+        caption,
+        "videoUrl": file.asset->url,
+        "mimeType": file.asset->mimeType
+      }
+    }
   }
 `);
 
