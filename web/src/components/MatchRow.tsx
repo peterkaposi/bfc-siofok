@@ -28,11 +28,21 @@ function MatchGoals({ match }: { match: Match }) {
   );
 }
 
-export default function MatchRow({ match }: { match: Match }) {
+export default function MatchRow({
+  match,
+  paired = false,
+}: {
+  match: Match;
+  paired?: boolean;
+}) {
   return (
-    <article className="min-w-0 grid gap-3 rounded-2xl border border-black/10 bg-white p-4 shadow-sm sm:grid-cols-[1fr_auto_auto] sm:items-center">
-      <div className="min-w-0 self-center">
-        <p className="break-words text-xs uppercase tracking-[0.15em] text-black/50 [overflow-wrap:anywhere]">
+    <article
+      className={`min-w-0 grid gap-3 rounded-2xl border border-black/10 bg-white p-4 shadow-sm sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:gap-x-3 ${
+        paired ? "h-full sm:items-center" : "sm:items-center"
+      }`}
+    >
+      <div className="min-w-0 sm:self-center">
+        <p className="line-clamp-2 min-h-[2.5rem] break-words text-xs uppercase leading-snug tracking-[0.15em] text-black/50 [overflow-wrap:anywhere]">
           {match.competition ?? "Bajnokság"}
           {match.round ? ` · ${match.round}. forduló` : ""}
         </p>
@@ -51,34 +61,36 @@ export default function MatchRow({ match }: { match: Match }) {
         <MatchGoals match={match} />
       </div>
 
-      <span
-        className={`inline-flex w-fit shrink-0 self-center rounded-full px-3 py-1 text-xs font-semibold uppercase ${
-          match.status === "live"
-            ? "bg-bfc-red text-white"
-            : match.status === "finished"
-              ? "bg-black/10 text-black/70"
-              : "bg-bfc-red/10 text-bfc-red"
-        }`}
-      >
-        {match.status === "live" ? (
-          <LiveMatchClock match={match} variant="badge" />
-        ) : match.status === "finished" ? (
-          "Lezárult"
-        ) : match.status === "postponed" ? (
-          "Elhalasztva"
-        ) : (
-          "Következő"
-        )}
-      </span>
+      <div className="flex items-center gap-2 sm:contents">
+        <span
+          className={`inline-flex w-fit shrink-0 rounded-full px-3 py-1 text-xs font-semibold uppercase sm:self-center ${
+            match.status === "live"
+              ? "bg-bfc-red text-white"
+              : match.status === "finished"
+                ? "bg-black/10 text-black/70"
+                : "bg-bfc-red/10 text-bfc-red"
+          }`}
+        >
+          {match.status === "live" ? (
+            <LiveMatchClock match={match} variant="badge" />
+          ) : match.status === "finished" ? (
+            "Lezárult"
+          ) : match.status === "postponed" ? (
+            "Elhalasztva"
+          ) : (
+            "Következő"
+          )}
+        </span>
 
-      <a
-        href={`${EREDMENYEK.baseUrl}/merkozes/foci/${match.id}/`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex w-fit shrink-0 self-center items-center justify-center rounded-full bg-bfc-red px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
-      >
-        Részletek
-      </a>
+        <a
+          href={`${EREDMENYEK.baseUrl}/merkozes/foci/${match.id}/`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex w-fit shrink-0 items-center justify-center rounded-full bg-bfc-red px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700 sm:col-start-3 sm:justify-self-end sm:self-center"
+        >
+          Részletek
+        </a>
+      </div>
     </article>
   );
 }

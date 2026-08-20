@@ -1,7 +1,7 @@
 import { EREDMENYEK } from "@/lib/constants";
 import type { Match } from "@/lib/flashscore/types";
 import { isWithinLastYear } from "@/lib/utils";
-import MatchListAccordion from "./MatchListAccordion";
+import MatchCenterSplit from "./MatchCenterSplit";
 import MatchRow from "./MatchRow";
 
 interface MatchCenterProps {
@@ -57,30 +57,8 @@ export default function MatchCenter({ matches, liveMatches }: MatchCenterProps) 
           </div>
         )}
 
-        <div className="mt-10 grid items-stretch gap-10 lg:grid-cols-2">
-          <div className="flex flex-col">
-            <h3 className="mb-4 font-display text-xl font-bold uppercase text-bfc-black">
-              Következő meccsek
-            </h3>
-            <div className="flex flex-1 flex-col">
-              <MatchListAccordion
-                matches={upcoming}
-                emptyMessage="Jelenleg nincs közelgő meccs az adatforrásban."
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col">
-            <h3 className="mb-4 font-display text-xl font-bold uppercase text-bfc-black">
-              Legutóbbi eredmények
-            </h3>
-            <div className="flex flex-1 flex-col">
-              <MatchListAccordion
-                matches={recent}
-                emptyMessage="Még nincs lejátszott meccs adat."
-              />
-            </div>
-          </div>
+        <div className="mt-10">
+          <MatchCenterSplit upcoming={upcoming} recent={recent} />
         </div>
       </div>
     </section>
