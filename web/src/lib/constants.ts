@@ -39,12 +39,12 @@ export const LIVE_REVALIDATE_SECONDS = 30;
 export const FLASHSCORE_FEED_SIGN = "SW9D1eZo";
 
 export const NAV_ITEMS = [
-  { href: "#meccsek", label: "Meccsek" },
-  { href: "#tabella", label: "Tabella" },
-  { href: "#hirek", label: "Hírek, események" },
-  { href: "#jatekosok", label: "Játékosok" },
-  { href: "#klubvezetes", label: "Klubvezetés" },
-  { href: "#tortenelem", label: "Klub történelem" },
+  { href: "/#meccsek", label: "Meccsek" },
+  { href: "/#tabella", label: "Tabella" },
+  { href: "/#hirek", label: "Hírek, események" },
+  { href: "/#jatekosok", label: "Játékosok" },
+  { href: "/#klubvezetes", label: "Klubvezetés" },
+  { href: "/#tortenelem", label: "Klub történelem" },
 ] as const;
 
 export const SHOP_LINK = {

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CLUB, NAV_ITEMS, SHOP_LINK } from "@/lib/constants";
 
@@ -91,6 +92,7 @@ function scrollToSection(id: string, headerHeight: number) {
 }
 
 export default function Header() {
+  const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -143,19 +145,37 @@ export default function Header() {
     );
   }, [headerHeight]);
 
+  useEffect(() => {
+    if (pathname !== "/" || !window.location.hash) return;
+
+    const id = window.location.hash.slice(1);
+    if (!id || !document.getElementById(id)) return;
+
+    const height = headerRef.current?.offsetHeight ?? headerHeight;
+
+    requestAnimationFrame(() => {
+      scrollToSection(id, height);
+    });
+  }, [pathname, headerHeight]);
+
   const closeMenu = () => setIsMenuOpen(false);
 
-  const handleMobileNav = (
+  const handleSectionNav = (
     event: React.MouseEvent<HTMLAnchorElement>,
     href: string,
   ) => {
-    if (!href.startsWith("#")) {
+    if (!href.startsWith("/#")) {
+      closeMenu();
+      return;
+    }
+
+    if (pathname !== "/") {
       closeMenu();
       return;
     }
 
     event.preventDefault();
-    const id = href.slice(1);
+    const id = href.slice(2);
     const height = headerRef.current?.offsetHeight ?? headerHeight;
 
     closeMenu();
@@ -197,6 +217,7 @@ export default function Header() {
                 <a
                   key={item.href}
                   href={item.href}
+                  onClick={(event) => handleSectionNav(event, item.href)}
                   className="text-sm font-medium text-white/80 transition hover:text-bfc-red"
                 >
                   {item.label}
@@ -245,7 +266,7 @@ export default function Header() {
             <a
               key={item.href}
               href={item.href}
-              onClick={(event) => handleMobileNav(event, item.href)}
+              onClick={(event) => handleSectionNav(event, item.href)}
               className="border-b border-white/5 py-3 text-base font-medium text-white/85 transition last:border-b-0 hover:text-bfc-red"
             >
               {item.label}
