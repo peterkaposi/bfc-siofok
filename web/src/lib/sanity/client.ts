@@ -1,6 +1,7 @@
 import { createImageUrlBuilder, type SanityImageSource } from "@sanity/image-url";
 
 import { client, isSanityConfigured } from "@/sanity/client";
+import { getYoutubeThumbnailUrl } from "@/lib/youtube";
 import {
   CLUB_HISTORY_QUERY,
   CLUB_LEADERS_QUERY,
@@ -97,6 +98,33 @@ function buildPhotoUrl(source: SanityImageSource | undefined): string | undefine
   return builder.image(source).width(600).height(700).fit("max").auto("format").url();
 }
 
+function findFirstYoutubeUrl(
+  body?: ArticleContentBlock[],
+): string | undefined {
+  const block = body?.find(
+    (item): item is YoutubeBlock => item._type === "youtube" && Boolean(item.url),
+  );
+  return block?.url;
+}
+
+function resolveArticleImageUrl(
+  mainImage: SanityImageSource | undefined,
+  youtubeUrl: string | undefined,
+  variant: "card" | "hero",
+): string | undefined {
+  const sanityUrl =
+    variant === "card"
+      ? buildCardImageUrl(mainImage)
+      : buildHeroImageUrl(mainImage);
+
+  if (sanityUrl) return sanityUrl;
+
+  return getYoutubeThumbnailUrl(
+    youtubeUrl,
+    variant === "hero" ? "max" : "hq",
+  );
+}
+
 export const PLACEHOLDER_NEWS: NewsArticle[] = [
   {
     _id: "placeholder-1",
@@ -130,6 +158,7 @@ export async function getNewsArticles(limit = 6): Promise<NewsArticle[]> {
         category?: string;
         publishedAt: string;
         mainImage?: SanityImageSource;
+        youtubeUrl?: string;
       }>
     >(NEWS_ARTICLES_QUERY, { limit }, { next: { revalidate: 60 } });
 
@@ -142,7 +171,11 @@ export async function getNewsArticles(limit = 6): Promise<NewsArticle[]> {
       excerpt: article.excerpt,
       category: article.category,
       publishedAt: article.publishedAt,
-      imageUrl: buildCardImageUrl(article.mainImage),
+      imageUrl: resolveArticleImageUrl(
+        article.mainImage,
+        article.youtubeUrl,
+        "card",
+      ),
     }));
   } catch {
     return PLACEHOLDER_NEWS.slice(0, limit);
@@ -163,10 +196,12 @@ export async function getNewsArticleBySlug(
       category?: string;
       publishedAt: string;
       mainImage?: SanityImageSource;
-      body?: PortableTextBlock[];
+      body?: ArticleContentBlock[];
     } | null>(NEWS_ARTICLE_BY_SLUG_QUERY, { slug }, { next: { revalidate: 60 } });
 
     if (!article) return null;
+
+    const youtubeUrl = findFirstYoutubeUrl(article.body);
 
     return {
       _id: article._id,
@@ -175,7 +210,11 @@ export async function getNewsArticleBySlug(
       excerpt: article.excerpt,
       category: article.category,
       publishedAt: article.publishedAt,
-      imageUrl: buildHeroImageUrl(article.mainImage),
+      imageUrl: resolveArticleImageUrl(
+        article.mainImage,
+        youtubeUrl,
+        "hero",
+      ),
       body: article.body,
     };
   } catch {

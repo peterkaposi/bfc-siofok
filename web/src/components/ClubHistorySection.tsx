@@ -7,7 +7,7 @@ interface ClubHistorySectionProps {
 
 export default function ClubHistorySection({ history }: ClubHistorySectionProps) {
   return (
-    <section id="tortenelem" className="w-full max-w-full bg-white py-16">
+    <section id="tortenelem" lang="hu" className="w-full max-w-full bg-zinc-50 py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-bfc-red">
@@ -19,7 +19,7 @@ export default function ClubHistorySection({ history }: ClubHistorySectionProps)
         </div>
 
         {!history?.body?.length ? (
-          <div className="mt-10 rounded-2xl border border-dashed border-black/15 bg-zinc-50 p-8 text-black/60">
+          <div className="mt-10 rounded-2xl border border-dashed border-black/15 bg-white p-8 text-black/60">
             <p className="font-medium text-bfc-black">
               A klub története hamarosan megjelenik.
             </p>
@@ -31,7 +31,7 @@ export default function ClubHistorySection({ history }: ClubHistorySectionProps)
         ) : (
           <PortableText
             blocks={history.body}
-            className="prose prose-neutral mt-10 max-w-3xl"
+            className="mx-auto mt-10 max-w-3xl [&_p]:hyphens-auto [&_p]:text-justify"
           />
         )}
       </div>

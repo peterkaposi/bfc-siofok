@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { NewsArticle } from "@/lib/sanity/client";
 import { CLUB } from "@/lib/constants";
 import { formatRelativeDate } from "@/lib/utils";
+import { isYoutubeThumbnailUrl } from "@/lib/youtube";
 
 interface NewsSectionProps {
   articles: NewsArticle[];
@@ -30,12 +31,16 @@ export default function NewsSection({ articles }: NewsSectionProps) {
               className="group min-w-0 overflow-hidden rounded-2xl border border-black/10 bg-zinc-50 shadow-sm transition hover:-translate-y-0.5 hover:border-bfc-red/30 hover:shadow-md"
             >
               {article.imageUrl ? (
-                <div className="flex h-48 items-center justify-center bg-zinc-100 p-6">
+                <div className="flex h-48 items-center justify-center overflow-hidden bg-zinc-100 p-6">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={article.imageUrl}
                     alt={article.title}
-                    className="max-h-full max-w-full object-contain transition group-hover:scale-[1.02]"
+                    className={`transition group-hover:scale-[1.02] ${
+                      isYoutubeThumbnailUrl(article.imageUrl)
+                        ? "h-full w-full object-cover"
+                        : "max-h-full max-w-full object-contain"
+                    }`}
                   />
                 </div>
               ) : (

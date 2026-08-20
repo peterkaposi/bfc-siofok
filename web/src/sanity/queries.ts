@@ -8,7 +8,8 @@ export const NEWS_ARTICLES_QUERY = defineQuery(`
     excerpt,
     category,
     publishedAt,
-    mainImage
+    mainImage,
+    "youtubeUrl": body[_type == "youtube"][0].url
   }
 `);
 

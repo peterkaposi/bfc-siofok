@@ -45,6 +45,8 @@ export const newsArticle = defineType({
       name: "mainImage",
       title: "Borítókép",
       type: "image",
+      description:
+        "Opcionális. Ha üresen hagyod és YouTube videót adsz a tartalomhoz, annak miniatűrje lesz a borítókép.",
       options: { hotspot: true },
     }),
     defineField({

@@ -51,3 +51,8 @@ export const SHOP_LINK = {
   href: "/shop",
   label: "Webshop",
 } as const;
+
+export const DEVELOPER = {
+  name: "Poa Software Ltd",
+  url: "https://poasoftware.com/",
+} as const;

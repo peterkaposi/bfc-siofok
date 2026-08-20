@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import PortableText from "@/components/PortableText";
 import { getNewsArticleBySlug } from "@/lib/sanity/client";
 import { formatMatchDate } from "@/lib/utils";
+import { isYoutubeThumbnailUrl } from "@/lib/youtube";
 
 export const revalidate = 60;
 
@@ -64,12 +65,16 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
         )}
 
         {article.imageUrl && (
-          <div className="mt-8 flex items-center justify-center rounded-2xl bg-zinc-100 p-6">
+          <div className="mt-8 overflow-hidden rounded-2xl bg-zinc-100">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={article.imageUrl}
               alt={article.title}
-              className="max-h-[28rem] w-full object-contain"
+              className={
+                isYoutubeThumbnailUrl(article.imageUrl)
+                  ? "aspect-video w-full object-cover"
+                  : "mx-auto max-h-[28rem] w-full object-contain p-6"
+              }
             />
           </div>
         )}

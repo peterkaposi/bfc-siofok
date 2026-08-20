@@ -25,3 +25,19 @@ export function getYoutubeVideoId(url: string): string | null {
 
   return null;
 }
+
+/** Public YouTube thumbnail URL (hqdefault is reliably available). */
+export function getYoutubeThumbnailUrl(
+  url: string | undefined | null,
+  size: "hq" | "max" = "hq",
+): string | undefined {
+  const videoId = url ? getYoutubeVideoId(url) : null;
+  if (!videoId) return undefined;
+
+  const file = size === "max" ? "maxresdefault" : "hqdefault";
+  return `https://img.youtube.com/vi/${videoId}/${file}.jpg`;
+}
+
+export function isYoutubeThumbnailUrl(url: string | undefined): boolean {
+  return Boolean(url?.includes("img.youtube.com/vi/"));
+}
