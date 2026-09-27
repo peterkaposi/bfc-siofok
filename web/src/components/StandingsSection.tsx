@@ -3,6 +3,7 @@ import type { TeamStats } from "@/lib/flashscore/types";
 
 interface StandingsSectionProps {
   stats: TeamStats;
+  position: number | null;
 }
 
 function StatCard({
@@ -34,11 +35,14 @@ function StatCard({
   );
 }
 
-export default function StandingsSection({ stats }: StandingsSectionProps) {
+export default function StandingsSection({
+  stats,
+  position,
+}: StandingsSectionProps) {
   const goalDifference = stats.goalsFor - stats.goalsAgainst;
 
   return (
-    <section id="tabella" className="w-full max-w-full bg-bfc-black py-16 text-white">
+    <section id="statisztika" className="w-full max-w-full bg-bfc-black py-16 text-white">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -62,8 +66,11 @@ export default function StandingsSection({ stats }: StandingsSectionProps) {
           </a>
         </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
-          <StatCard label="Lejátszott" value={stats.played} accent />
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {position !== null && (
+            <StatCard label="Helyezés" value={`${position}.`} accent />
+          )}
+          <StatCard label="Lejátszott" value={stats.played} />
           <StatCard label="Győzelem" value={stats.wins} />
           <StatCard label="Döntetlen" value={stats.draws} />
           <StatCard label="Vereség" value={stats.losses} />

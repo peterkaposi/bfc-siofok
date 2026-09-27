@@ -40,7 +40,7 @@ export const FLASHSCORE_FEED_SIGN = "SW9D1eZo";
 
 export const NAV_ITEMS = [
   { href: "/#meccsek", label: "Meccsek" },
-  { href: "/#tabella", label: "Tabella" },
+  { href: "/#statisztika", label: "Statisztika" },
   { href: "/#hirek", label: "Hírek, események" },
   { href: "/#jatekosok", label: "Játékosok" },
   { href: "/#klubvezetes", label: "Klubvezetés" },

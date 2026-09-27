@@ -31,15 +31,27 @@ export interface Match {
   tournamentId?: string;
   round?: string;
   isHome: boolean;
-  /** Raw AB feed stage code (1=scheduled, 2=live, 12=1H, 13=2H, 38=HT, 3=finished) */
+  /** Raw AB feed code (1=scheduled, 2=live, 3=finished) */
   feedStage?: string;
+  /**
+   * Period while the match is live (AC field): 12=1st half, 13=2nd half,
+   * 38=half time, 46=break, 6=extra time, 7=penalties.
+   */
+  periodStage?: string;
   /** Stage from match detail feed (DB field) — more accurate when AB=2 */
   detailStage?: string;
   /** Unix timestamp when the current period clock started (AO / DD field) */
   periodStartTime?: number;
-  /** Current match minute from feed (AC field, may lag behind) */
+  /** Optional minute hint. Not the AC stage code. */
   liveMinute?: number;
   goals?: MatchGoal[];
+  /** Published live stream for an in-play match */
+  broadcast?: MatchBroadcast;
+}
+
+export interface MatchBroadcast {
+  url: string;
+  provider?: string;
 }
 
 export interface TeamStats {
@@ -50,6 +62,26 @@ export interface TeamStats {
   goalsFor: number;
   goalsAgainst: number;
   points: number;
+}
+
+export interface StandingRow {
+  rank: number;
+  teamId: string;
+  teamName: string;
+  played: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  points: number;
+  /** q1 = promotion place, r1 = relegation place */
+  zone?: string;
+}
+
+export interface LeagueTable {
+  title: string;
+  rows: StandingRow[];
 }
 
 export interface TeamSummary {

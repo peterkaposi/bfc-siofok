@@ -59,6 +59,14 @@ export default function MatchRow({
           )}
         </p>
         <MatchGoals match={match} />
+        {match.status === "live" && match.broadcast && (
+          <a
+            href="#elo-kozvetites"
+            className="mt-3 inline-flex w-fit items-center justify-center rounded-full border border-bfc-red px-4 py-2 text-sm font-semibold text-bfc-red transition hover:bg-bfc-red hover:text-white"
+          >
+            Élő közvetítés
+          </a>
+        )}
       </div>
 
       <div className="flex items-center gap-2 sm:contents">

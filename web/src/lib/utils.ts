@@ -106,18 +106,33 @@ function teamLabel(team: { id: string; name: string }): string {
   return team.id === EREDMENYEK.teamId ? CLUB.name : team.name;
 }
 
-const HALFTIME_STAGES = new Set(["38", "46"]);
-
 function resolveLiveStage(match: Match): string | undefined {
   if (match.detailStage && match.detailStage !== "2") {
     return match.detailStage;
+  }
+
+  if (match.periodStage && match.periodStage !== "2") {
+    return match.periodStage;
   }
 
   if (match.feedStage && match.feedStage !== "2") {
     return match.feedStage;
   }
 
-  return match.detailStage ?? match.feedStage;
+  return match.detailStage ?? match.periodStage ?? match.feedStage;
+}
+
+function formatPeriodMinute(
+  elapsed: number,
+  periodOffset: number,
+  periodLength: number,
+): string {
+  const minute = Math.max(elapsed, 1);
+  const total = periodOffset + minute;
+  const cap = periodOffset + periodLength;
+
+  if (total <= cap) return `${total}'`;
+  return `${cap}+${total - cap}'`;
 }
 
 export function computeLiveMinute(
@@ -132,9 +147,9 @@ export function computeLiveMinute(
     return null;
   }
 
-  if (stage && HALFTIME_STAGES.has(stage)) {
-    return "Félidő";
-  }
+  if (stage === "38") return "Félidő";
+  if (stage === "46") return "Szünet";
+  if (stage === "7") return "Büntetők";
 
   const periodStartSec =
     match.periodStartTime ??
@@ -144,19 +159,16 @@ export function computeLiveMinute(
     Math.floor((nowMs / 1000 - periodStartSec) / 60),
   );
 
-  if (stage === "13") {
-    return `${45 + elapsed}'`;
-  }
+  if (stage === "13") return formatPeriodMinute(elapsed, 45, 45);
+  if (stage === "6") return formatPeriodMinute(elapsed, 90, 15);
+  if (stage === "12") return formatPeriodMinute(elapsed, 0, 45);
 
-  if (elapsed > 0 || match.periodStartTime || stage === "12") {
-    return `${elapsed}'`;
+  if (elapsed > 0 || match.periodStartTime) {
+    return `${Math.max(elapsed, 1)}'`;
   }
 
   const feedMinute = match.liveMinute;
-  if (feedMinute !== undefined) {
-    if (stage === "13") {
-      return feedMinute <= 45 ? `${45 + feedMinute}'` : `${feedMinute}'`;
-    }
+  if (feedMinute !== undefined && feedMinute > 0 && feedMinute < 130) {
     return `${feedMinute}'`;
   }
 
@@ -167,16 +179,20 @@ export function formatLiveMinute(match: Match): string | null {
   return computeLiveMinute(match);
 }
 
+const LIVE_PHASE_LABELS = new Set(["Félidő", "Szünet", "Büntetők"]);
+
 export function formatLiveBadge(match: Match): string {
   const minute = formatLiveMinute(match);
-  if (minute === "Félidő") return "Félidő";
-  if (minute) return `Élő · ${minute}`;
-  return "Élő";
+  if (!minute) return "Élő";
+  if (LIVE_PHASE_LABELS.has(minute)) return minute;
+  return `Élő · ${minute}`;
 }
 
 export function formatMatchGoalLabel(goal: MatchGoal): string {
   const suffix = goal.type === "penalty" ? " (büntető)" : "";
-  return `${goal.minute} ${goal.playerName}${suffix}`;
+  const name = goal.playerName.trim();
+  if (!name) return `${goal.minute} Gól${suffix}`.trim();
+  return `${goal.minute} ${name}${suffix}`;
 }
 
 export function formatMatchTeams(match: Match): string {

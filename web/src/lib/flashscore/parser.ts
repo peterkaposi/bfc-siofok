@@ -1,8 +1,10 @@
 import { EREDMENYEK } from "@/lib/constants";
 import type {
   Match,
+  MatchBroadcast,
   MatchGoal,
   MatchStatus,
+  StandingRow,
   TeamData,
   TeamStats,
   TeamSummary,
@@ -134,6 +136,9 @@ export function hasMatchInLiveWindow(matches: Match[]): boolean {
   });
 }
 
+/** Start refreshing shortly before kickoff so the minute and stream appear on time. */
+const POLL_LEAD_MS = 15 * 60 * 1000;
+
 /** True while we should poll for live score / full-time updates. */
 export function shouldPollLiveMatches(matches: Match[]): boolean {
   if (matches.some((match) => match.status === "live")) {
@@ -143,12 +148,10 @@ export function shouldPollLiveMatches(matches: Match[]): boolean {
   const now = Date.now();
 
   return matches.some((match) => {
-    if (match.status === "finished") return false;
+    if (match.status === "finished" || match.status === "cancelled") return false;
 
     const kickoff = new Date(match.date).getTime();
-    return (
-      kickoff <= now + KICKOFF_BUFFER_MS && now <= kickoff + MATCH_WINDOW_MS
-    );
+    return kickoff <= now + POLL_LEAD_MS && now <= kickoff + MATCH_WINDOW_MS;
   });
 }
 
@@ -201,9 +204,26 @@ function recordToMatch(
     round: fields.ER,
     isHome: homeTeamId === teamId,
     feedStage,
-    liveMinute: parseScore(fields.AC),
+    periodStage: inPlayPeriodStage(fields.AC),
     periodStartTime: parseScore(fields.AO),
   };
+}
+
+/** AC is the period during a live match, not the minute. */
+const IN_PLAY_PERIOD_STAGES = new Set([
+  "6",
+  "7",
+  "12",
+  "13",
+  "38",
+  "42",
+  "45",
+  "46",
+]);
+
+function inPlayPeriodStage(raw?: string): string | undefined {
+  if (!raw || !IN_PLAY_PERIOD_STAGES.has(raw)) return undefined;
+  return raw;
 }
 
 export function parseMatchDetailStage(feed: string): string | undefined {
@@ -241,11 +261,11 @@ export function parseMatchGoals(feed: string): MatchGoal[] {
       fields.IE === "3" ||
       fields.IE === "10";
 
-    if (!isGoal || !fields.IF) continue;
+    if (!isGoal) continue;
 
     goals.push({
       minute: fields.IB ?? "",
-      playerName: fields.IF,
+      playerName: fields.IF?.trim() ?? "",
       teamSide: fields.IA === "2" ? "away" : "home",
       type:
         eventLabel === "Penalty" || fields.IE === "10" ? "penalty" : "goal",
@@ -253,6 +273,67 @@ export function parseMatchGoals(feed: string): MatchGoal[] {
   }
 
   return goals;
+}
+
+export function parseMatchBroadcast(feed: string): MatchBroadcast | undefined {
+  const candidates: Array<MatchBroadcast & { live: boolean }> = [];
+
+  for (const record of feed.split("~")) {
+    const fields = parseFeedRecord(record);
+    const url = fields.HUO || fields.HUR;
+    if (!url?.startsWith("http")) continue;
+
+    const label = fields.HTI ?? "";
+    candidates.push({
+      url,
+      provider: fields.HHV,
+      live: /live stream/i.test(label) || /közvetít/i.test(label),
+    });
+  }
+
+  const match = candidates.find((item) => item.live) ?? candidates[0];
+  if (!match) return undefined;
+
+  return {
+    url: match.url,
+    provider: match.provider,
+  };
+}
+
+export function parseStandingsFeed(feed: string): StandingRow[] {
+  const rows: StandingRow[] = [];
+  let inOverall = false;
+
+  for (const record of feed.split("~")) {
+    const fields = parseFeedRecord(record);
+
+    if (fields.TZ || fields.TZS) {
+      const overall = fields.TZS
+        ? fields.TZS === "Overall"
+        : fields.TZ === "Standings";
+      inOverall = overall && rows.length === 0;
+      continue;
+    }
+
+    if (!inOverall || !fields.TR || !fields.TN || !fields.TI) continue;
+
+    const [goalsForRaw, goalsAgainstRaw] = (fields.TG ?? "0:0").split(":");
+    rows.push({
+      rank: parseScore(fields.TR) ?? rows.length + 1,
+      teamId: fields.TI,
+      teamName: fields.TN,
+      played: parseScore(fields.TM) ?? 0,
+      wins: parseScore(fields.TW) ?? 0,
+      draws: parseScore(fields.TDR) ?? 0,
+      losses: parseScore(fields.TL) ?? 0,
+      goalsFor: parseScore(goalsForRaw) ?? 0,
+      goalsAgainst: parseScore(goalsAgainstRaw) ?? 0,
+      points: parseScore(fields.TP) ?? 0,
+      zone: fields.TU || undefined,
+    });
+  }
+
+  return rows.sort((a, b) => a.rank - b.rank);
 }
 
 function parseFeedBlock(block: string, teamId: string): Match[] {
@@ -359,6 +440,44 @@ function getCurrentSeasonStageId(matches: Match[]): string | undefined {
     .filter((match) => match.status === "finished" && match.stageId)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
     ?.stageId;
+}
+
+export function getCurrentSeasonContext(matches: Match[]): {
+  stageId?: string;
+  tournamentId?: string;
+  title: string;
+} {
+  const stageId = getCurrentSeasonStageId(matches);
+  if (!stageId) {
+    return { title: EREDMENYEK.primaryLeague };
+  }
+
+  const seasonMatch = matches.find(
+    (match) => match.stageId === stageId && isPrimaryLeagueMatch(match),
+  );
+  const rawTitle = seasonMatch?.competition ?? EREDMENYEK.primaryLeague;
+
+  return {
+    stageId,
+    tournamentId: seasonMatch?.tournamentId,
+    title: rawTitle.replace(/^.*:\s*/, ""),
+  };
+}
+
+export function liveSnapshotKey(matches: Match[]): string {
+  return matches
+    .filter((match) => match.status === "live")
+    .map((match) =>
+      [
+        match.id,
+        match.homeScore ?? "",
+        match.awayScore ?? "",
+        match.detailStage ?? match.periodStage ?? "",
+        match.periodStartTime ?? "",
+        match.broadcast?.url ?? "",
+      ].join(":"),
+    )
+    .join("|");
 }
 
 function computeSeasonStats(matches: Match[]): TeamStats {

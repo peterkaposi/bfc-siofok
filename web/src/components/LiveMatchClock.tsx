@@ -1,6 +1,5 @@
 "use client";
 
-import { LIVE_REVALIDATE_SECONDS } from "@/lib/constants";
 import type { Match } from "@/lib/flashscore/types";
 import { formatLiveBadge, formatLiveMinute } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -23,7 +22,6 @@ function getClockLabel(match: Match, variant: LiveMatchClockVariant): string {
     return formatLiveBadge(match);
   }
 
-  if (minute === "Félidő") return "Félidő";
   if (minute) {
     return `${minute} · ${match.isHome ? "Hazai pálya" : "Idegenbeli"}`;
   }
@@ -41,8 +39,7 @@ export default function LiveMatchClock({
     const update = () => setLabel(getClockLabel(match, variant));
     update();
 
-    const intervalMs = LIVE_REVALIDATE_SECONDS * 1000;
-    const id = window.setInterval(update, intervalMs);
+    const id = window.setInterval(update, 1000);
     return () => window.clearInterval(id);
   }, [match, variant]);
 

@@ -1,3 +1,4 @@
+import { EREDMENYEK } from "@/lib/constants";
 import ClubHistorySection from "@/components/ClubHistorySection";
 import Hero from "@/components/Hero";
 import LeadershipSection from "@/components/LeadershipSection";
@@ -5,8 +6,8 @@ import MatchCenter from "@/components/MatchCenter";
 import NewsSection from "@/components/NewsSection";
 import PlayersSection from "@/components/PlayersSection";
 import StandingsSection from "@/components/StandingsSection";
-import { getTeamData, reconcileTeamData, refreshTeamData } from "@/lib/flashscore/client";
-import { hasMatchInLiveWindow, shouldPollLiveMatches, summarizeTeamData } from "@/lib/flashscore/parser";
+import { getLeagueStandings, getTeamData, reconcileTeamData, refreshTeamData } from "@/lib/flashscore/client";
+import { hasMatchInLiveWindow, liveSnapshotKey, summarizeTeamData } from "@/lib/flashscore/parser";
 import {
   getClubHistory,
   getClubLeaders,
@@ -36,6 +37,10 @@ export default async function HomePage() {
 
   const liveMatches = summary.liveMatches;
   const liveMatch = liveMatches[0];
+  const refreshingLive = liveMatches.length > 0 || inLiveWindow;
+  const table = await getLeagueStandings(teamData.matches, {
+    fresh: refreshingLive,
+  }).catch(() => null);
 
   const [articles, players, leaders, history] = await Promise.all([
     getNewsArticles(),
@@ -46,7 +51,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {shouldPollLiveMatches(teamData.matches) && <LiveMatchAutoRefresh />}
+      <LiveMatchAutoRefresh fingerprint={liveSnapshotKey(teamData.matches)} />
       <Hero
         nextMatch={summary.nextMatch}
         lastMatch={summary.lastMatch}
@@ -56,7 +61,13 @@ export default async function HomePage() {
         matches={teamData.matches}
         liveMatches={liveMatches}
       />
-      <StandingsSection stats={summary.stats} />
+      <StandingsSection
+        stats={summary.stats}
+        position={
+          table?.rows.find((row) => row.teamId === EREDMENYEK.teamId)?.rank ??
+          null
+        }
+      />
       <NewsSection articles={articles} />
       <PlayersSection players={players} />
       <LeadershipSection leaders={leaders} />

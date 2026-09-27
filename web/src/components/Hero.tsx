@@ -5,6 +5,7 @@ import {
   formatMatchTeams,
   formatUpcomingMatchDate,
 } from "@/lib/utils";
+import LiveBroadcast from "./LiveBroadcast";
 import LiveMatchClock from "./LiveMatchClock";
 
 interface HeroProps {
@@ -51,13 +52,18 @@ function MatchPill({
         {variant === "live" && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-bfc-red px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-            <LiveMatchClock match={match} variant="minute" />
+            Élő
           </span>
         )}
       </div>
       <p className="mt-2 font-display text-xl font-bold leading-snug text-white sm:text-2xl">
         {formatMatchTeams(match)}
       </p>
+      {variant === "live" && (
+        <p className="mt-3 font-display text-4xl font-bold tabular-nums leading-none text-white">
+          <LiveMatchClock match={match} variant="minute" />
+        </p>
+      )}
       <p className="mt-2 text-xs text-white/60">
         {variant === "live"
           ? `${formatMatchDate(match.date)} · ${venue}`
@@ -96,7 +102,17 @@ export default function Hero({ nextMatch, lastMatch, liveMatch }: HeroProps) {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
           {liveMatch && (
-            <MatchPill label="Élő meccs" match={liveMatch} variant="live" />
+            <div className="sm:col-span-2 lg:col-span-1">
+              <MatchPill label="Élő meccs" match={liveMatch} variant="live" />
+            </div>
+          )}
+          {liveMatch?.broadcast && (
+            <div className="sm:col-span-2 lg:col-span-1">
+              <LiveBroadcast
+                url={liveMatch.broadcast.url}
+                provider={liveMatch.broadcast.provider}
+              />
+            </div>
           )}
           <MatchPill label="Következő meccs" match={nextMatch} variant="next" />
           <MatchPill label="Utolsó meccs" match={lastMatch} variant="last" />
